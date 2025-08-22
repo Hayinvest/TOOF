@@ -170,15 +170,25 @@ window.addEventListener("load", () => {
     <!-- Tabs բաժին -->
     <div class="tabs">
     </button>
-    <button class="tab-button active" data-tab="play">
-<img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/Picsart_25-03-28_20-51-07-122.jpg" alt="play-xax" class="play-icon">
+  <button class="tab-button active" data-tab="play">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="play-icon">
+    <path d="M341.8 72.6C329.5 61.2 310.5 61.2 298.3 72.6L74.3 280.6C64.7 289.6 61.5 303.5 66.3 315.7C71.1 327.9 82.8 336 96 336L112 336L112 512C112 547.3 140.7 576 176 576L464 576C499.3 576 528 547.3 528 512L528 336L544 336C557.2 336 569 327.9 573.8 315.7C578.6 303.5 575.4 289.5 565.8 280.6L341.8 72.6zM304 384L336 384C362.5 384 384 405.5 384 432L384 528L256 528L256 432C256 405.5 277.5 384 304 384z"/>
+  </svg>
 </button>
-      <button class="tab-button" data-tab="home">
-        <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/Picsart_25-03-28_20-52-07-873.jpg" alt="Tasks" class="tasks-icon">
-        
+
+    <button class="tab-button" data-tab="home">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="tasks-icon">
+    <path d="M104 112C90.7 112 80 122.7 80 136L80 184C80 197.3 90.7 208 104 208L152 208C165.3 208 176 197.3 176 184L176 136C176 122.7 165.3 112 152 112L104 112zM256 128C238.3 128 224 142.3 224 160C224 177.7 238.3 192 256 192L544 192C561.7 192 576 177.7 576 160C576 142.3 561.7 128 544 128L256 128zM256 288C238.3 288 224 302.3 224 320C224 337.7 238.3 352 256 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L256 288zM256 448C238.3 448 224 462.3 224 480C224 497.7 238.3 512 256 512L544 512C561.7 512 576 497.7 576 480C576 462.3 561.7 448 544 448L256 448zM80 296L80 344C80 357.3 90.7 368 104 368L152 368C165.3 368 176 357.3 176 344L176 296C176 282.7 165.3 272 152 272L104 272C90.7 272 80 282.7 80 296zM104 432C90.7 432 80 442.7 80 456L80 504C80 517.3 90.7 528 104 528L152 528C165.3 528 176 517.3 176 504L176 456C176 442.7 165.3 432 152 432L104 432z"/>
+  </svg>
+</button>
+
+      
       <button class="tab-button" data-tab="profile">
-        <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/Picsart_25-03-28_20-52-49-352.jpg" alt="Profile" class="profile-icon">
-      </button>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="profile-icon">
+    <path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"/>
+  </svg>
+</button>
+
     </div>
     <!-- Բովանդակության կոնտեյներ -->
     <div class="content">
@@ -234,30 +244,51 @@ window.addEventListener("load", () => {
 
   const profileDiv = document.getElementById("profileInfo");
 
-  profileDiv.innerHTML = `
-    <div style="
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px;
-      background:#1e1e1e;
-      border-radius:14px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.5);
-      color:#fff;
-      border-top:2px solid #fff; 
-      margin-top:-26px;
-    ">
-      <img src="${user.photo_url || ''}" 
-           alt="Profile Photo" 
-           style="width:80px;height:80px;border-radius:50%;object-fit:cover;;${user.photo_url ? '' : 'display:none;'}">
-      <div style="flex:1;">
-        <h3 style="margin:0;font-size:18px;color:#fff;">${user.first_name} ${user.last_name || ''}</h3>
-        <p style="margin:3px 0; color:#aaa;">@${user.username || '—'}</p>
-        <p style="margin:3px 0; font-size:14px; color:#777;">ID: ${user.id}</p>
-      </div>
+profileDiv.innerHTML = `
+  <div style="
+    position: relative; 
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    background:#1e1e1e;
+    border-radius:14px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.5);
+    color:#fff;
+    border-top:2px solid #fff; 
+    margin-top:-26px;
+  ">
+    <!-- History Button -->
+    <button style="
+      position: absolute;
+      top:10px;
+      right:10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding:5px;
+      display: flex;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      align-items: center;
+      justify-content: center;
+    " id="historyBtn">
+      <!-- Այստեղ քո SVG-ն է -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20" fill="#fff">
+        <path d="M320 128C426 128 512 214 512 320C512 426 426 512 320 512C254.8 512 197.1 479.5 162.4 429.7C152.3 415.2 132.3 411.7 117.8 421.8C103.3 431.9 99.8 451.9 109.9 466.4C156.1 532.6 233 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C234.3 64 158.5 106.1 112 170.7L112 144C112 126.3 97.7 112 80 112C62.3 112 48 126.3 48 144L48 256C48 273.7 62.3 288 80 288L104.6 288C105.1 288 105.6 288 106.1 288L192.1 288C209.8 288 224.1 273.7 224.1 256C224.1 238.3 209.8 224 192.1 224L153.8 224C186.9 166.6 249 128 320 128zM344 216C344 202.7 333.3 192 320 192C306.7 192 296 202.7 296 216L296 320C296 326.4 298.5 332.5 303 337L375 409C384.4 418.4 399.6 418.4 408.9 409C418.2 399.6 418.3 384.4 408.9 375.1L343.9 310.1L343.9 216z"/>
+      </svg>
+    </button>
+
+    <img src="${user.photo_url || ''}" 
+         alt="Profile Photo" 
+         style="width:80px;height:80px;border-radius:50%;object-fit:cover;${user.photo_url ? '' : 'display:none;'}">
+    <div style="flex:1;">
+      <h3 style="margin:0;font-size:18px;color:#fff;">${user.first_name} ${user.last_name || ''}</h3>
+      <p style="margin:3px 0; color:#aaa;">@${user.username || '—'}</p>
+      <p style="margin:3px 0; font-size:14px; color:#777;">ID: ${user.id}</p>
     </div>
-  `;
-</script>
+  </div>
+`;
 
 </script>
 

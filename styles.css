@@ -79,11 +79,13 @@ animation: pop 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000000;
+  background: #00000083;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
+   border-radius: 15px 15px 0 0;
+
 }
 
 /* Tab Button */
@@ -96,7 +98,6 @@ animation: pop 0.3s;
   font-size: 10px;
   transition: color 0.3s ease;
     font-size: 24px; /* icon-ի չափը */
-  color: #aaa;     /* default գույն */
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
 }
@@ -370,8 +371,10 @@ background: #8A2BE2;
     }
 
     .tab-button.active {
-        background-color: #000000;
+        background-color: #00000096;
         color: rgb(255, 255, 255);
+         border-top-left-radius: 15px;   /* վերևի ձախ անկյուն */
+  border-top-right-radius: 15px; 
     }
 
     .tab-content {
@@ -386,6 +389,17 @@ background: #8A2BE2;
         opacity: 1;
         transform: translateY(0);
     }
+    .tab-button svg {
+  width: 35px;       /* icon-ի չափը */
+  height: 35px;
+  fill: rgb(255, 255, 255);        /* նախնական գույնը */
+  transition: fill 0.2s;
+}
+
+.tab-button.active svg {
+  fill: #8A2BE2;     /* ակտիվ icon-ի գույնը */
+}
+
     .tab-button {
 position: relative;
 padding: 10px 20px;
@@ -395,6 +409,7 @@ font-size: 5px;
 transition: color 0.3s;
 }
 
+
 .tab-button::after {
 content: "";
 position: absolute;
@@ -402,7 +417,7 @@ left: 50%;
 bottom: 0;
 width: 0;
 height: 3px;
-border-radius: 28%;
+border-radius: 20%;
 background-color: #8A2BE2;
 transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
 }
@@ -416,7 +431,7 @@ width: 100%;
 left: 0;}
 
 
-.tasks-icon, .reward-icon, .profile-icon,.play-icon {
+.tasks-icon, .reward-icon, .profile-icon {
 width: 48px; /* Կամ ցանկացած հարմար չափ */
 height: 48px;
 }
@@ -1394,4 +1409,19 @@ input[type=number] {
   border: #ffffff solid 2px;
   font-weight: bold;
 
+}
+.play-icon {
+  width: 28px;   /* փոխիր ըստ ցանկության */
+  height: 28px;
+  fill: rgb(244, 244, 244);   /* icon-ի գույնը */
+}
+.profile-icon{
+  width: 28px;   /* փոխիր ըստ ցանկության */
+  height: 28px;
+  fill: rgb(255, 255, 255);   /* icon-ի գույնը */
+}
+.tasks-icon {
+  width: 28px;   /* կամ քո նախընտրած չափը */
+  height: 28px;
+  fill: rgb(240, 240, 240);   /* գույնը */
 }
