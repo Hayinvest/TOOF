@@ -1175,8 +1175,8 @@ h2{
 }
 .score-image {
   margin-top: -25px;
-  width: 170px;
-  height: 170px;
+  width: 180px;
+  height: 180px;
   object-fit: contain;
 }
 
@@ -1228,7 +1228,7 @@ font-weight: bold;
 .popup-content {
   background: #111;
   color: white;
-  border: 1px solid #00d0ff;
+  border: 1px solid #7c20ce;
   border-radius: 18px;
   padding: 20px;
   width: 90%;
@@ -1236,7 +1236,7 @@ font-weight: bold;
   margin: 100px auto;
   text-align: center;
   font-family: sans-serif;
-  box-shadow: 0 0 10px  #00bbff;
+  box-shadow: 0 0 10px  #7c20ce;
 }
 .popup-content ul {
   list-style: none;
@@ -1247,14 +1247,7 @@ font-weight: bold;
   margin: 10px 0;
   font-size: 15px;
 }
-.popup-content button {
-  margin-top: 20px;
-  padding: 10px 15px;
-  background-color: #00d0ff;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-}
+
 .popupbonus {
   position: fixed;
   z-index: 999;
@@ -1270,16 +1263,17 @@ font-weight: bold;
   padding: 20px;
   max-width: 320px;
   margin: 100px auto;
-  border: 1px solid #00d0ff;
+  border: 1px solid #7c20ce;
   text-align: center;
 }
 .popup-content button {
-  background-color: #00d0ff;
+  background-color: #7c20ce;
   color: black;
   border: none;
   padding: 10px 15px;
   border-radius: 6px;
   margin-top: 10px;
+  font-weight: bold;
 }
 @keyframes popupFadeIn {
   from {
@@ -1313,7 +1307,7 @@ font-weight: bold;
   border-radius: 10px;
   padding: 20px;
   max-width: 320px;
-  border: 1px solid #00d0ff;
+  border: 1px solid #7c20ce;
   text-align: center;
   animation: popupFadeIn 0.4s ease forwards;
 }

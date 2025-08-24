@@ -69,7 +69,7 @@ function watchAdAndReward(taskId) {
 .popup-content {
   background: #111;
   color: white;
-  border: 1px solid #00f0ff;
+  border: 1px solid #7c20ce;
   border-radius: 10px;
   padding: 20px;
   width: 90%;
@@ -257,6 +257,7 @@ profileDiv.innerHTML = `
     color:#fff;
     border-top:2px solid #fff; 
     margin-top:-26px;
+    flex-direction: column;
   ">
     <!-- History Button -->
     <button style="
@@ -265,7 +266,6 @@ profileDiv.innerHTML = `
       right:10px;
       background: transparent;
       border: none;
-      cursor: pointer;
       padding:5px;
       display: flex;
       border: 2px solid #fff;
@@ -273,19 +273,48 @@ profileDiv.innerHTML = `
       align-items: center;
       justify-content: center;
     " id="historyBtn">
-      <!-- Այստեղ քո SVG-ն է -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20" fill="#fff">
         <path d="M320 128C426 128 512 214 512 320C512 426 426 512 320 512C254.8 512 197.1 479.5 162.4 429.7C152.3 415.2 132.3 411.7 117.8 421.8C103.3 431.9 99.8 451.9 109.9 466.4C156.1 532.6 233 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C234.3 64 158.5 106.1 112 170.7L112 144C112 126.3 97.7 112 80 112C62.3 112 48 126.3 48 144L48 256C48 273.7 62.3 288 80 288L104.6 288C105.1 288 105.6 288 106.1 288L192.1 288C209.8 288 224.1 273.7 224.1 256C224.1 238.3 209.8 224 192.1 224L153.8 224C186.9 166.6 249 128 320 128zM344 216C344 202.7 333.3 192 320 192C306.7 192 296 202.7 296 216L296 320C296 326.4 298.5 332.5 303 337L375 409C384.4 418.4 399.6 418.4 408.9 409C418.2 399.6 418.3 384.4 408.9 375.1L343.9 310.1L343.9 216z"/>
       </svg>
     </button>
 
-    <img src="${user.photo_url || ''}" 
-         alt="Profile Photo" 
-         style="width:80px;height:80px;border-radius:50%;object-fit:cover;${user.photo_url ? '' : 'display:none;'}">
-    <div style="flex:1;">
-      <h3 style="margin:0;font-size:18px;color:#fff;">${user.first_name} ${user.last_name || ''}</h3>
-      <p style="margin:3px 0; color:#aaa;">@${user.username || '—'}</p>
-      <p style="margin:3px 0; font-size:14px; color:#777;">ID: ${user.id}</p>
+    <div style="display:flex;align-items:center;width:100%;gap:10px;">
+      <img src="${user.photo_url || ''}" 
+          alt="Profile Photo" 
+          style="width:80px;height:80px;border-radius:50%;object-fit:cover;${user.photo_url ? '' : 'display:none;'}">
+      <div style="flex:1;">
+        <h3 style="margin:0;font-size:18px;color:#fff;">${user.first_name} ${user.last_name || ''}</h3>
+        <p style="margin:3px 0; color:#aaa;">@${user.username || '—'}</p>
+        <p style="margin:3px 0; font-size:14px; color:#777;">ID: ${user.id}</p>
+      </div>
+    </div>
+
+    <!-- Links Card -->
+    <div style="
+      margin-top:15px;
+      background:#111;
+      border-radius:12px;
+      overflow:hidden;
+      width:100%;
+      background-color: #2b2b2b;
+      font-weight: bold;
+    ">
+      <a href="#support" style="display:flex;align-items:center;gap:10px;padding:12px;color:#fff;text-decoration:none;border-bottom:1px solid #333;">
+      <i class="fa-regular fa-comments"></i>
+        Support
+      </a>
+      <a href="#about" style="display:flex;align-items:center;gap:10px;padding:12px;color:#fff;text-decoration:none;border-bottom:1px solid #333;">
+      <i class="fa-regular fa-file"></i>
+        About Us
+      </a>
+      <a href="#privacy" style="display:flex;align-items:center;gap:10px;padding:12px;color:#fff;text-decoration:none;border-bottom:1px solid #333;">
+      <i class="fa-regular fa-eye-slash"></i>
+        Privacy Policy
+      </a>
+      <a href="#terms" style="display:flex;align-items:center;gap:10px;padding:12px;color:#fff;text-decoration:none;">
+      <i class="fa-regular fa-file-lines"></i>
+        Terms & Conditions
+      </a>
     </div>
   </div>
 `;
