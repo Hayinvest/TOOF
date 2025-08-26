@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy – TOOF Mini App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      line-height: 1.6;
+      background: #000;
+    }
+
+    .container {
+      position: relative;
+      max-width: 800px;
+      margin: auto;
+      padding: 30px 20px;
+      background: rgba(0, 0, 0, 0.65);
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+      margin-top: 60px;
+    }
+
+    h1, h2 {
+      color: #7c20ce;
+      text-align: center;
+    }
+
+    p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    ul {
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    /* Back button */
+    .back-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: #7c20ce;
+      color: #ffffff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      transition: 0.3s;
+      z-index: 10;
+    }
+    .back-btn:hover {
+      background: #7c20ce;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+        margin: 15px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      h2 {
+        font-size: 18px;
+      }
+      p {
+        font-size: 14px;
+      }
+      .back-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+    }
+
+    /* Background stars */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #8A2BE2, #191970);
+      background-size: 200% 100%;
+      animation: slide 6s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    @keyframes slide {
+      0%   { background-position: left; }
+      100% { background-position: right; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starCanvas"></canvas>
+
+  <!-- Back button -->
+  <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+
+  <div class="container">
+    <h1>Privacy Policy – TOOF Mini App</h1>
+    <p><strong>Last updated – August 26, 2025</strong></p>
+
+    <h2>1. Data We Collect</h2>
+    <p>We do <strong>not</strong> collect or store any personal data such as name, score, userID, or other details.</p>
+    <p>The only data we may keep is:</p>
+    <ul>
+      <li><strong>TON Wallet Address</strong> – and only if the user voluntarily provides it.</li>
+    </ul>
+
+    <h2>2. Why We Use TON Wallet Address</h2>
+    <p>The provided wallet address is used exclusively for:</p>
+    <ul>
+      <li>Verifying and processing payments.</li>
+    </ul>
+    <p>We do not share your wallet address with third parties and do not use it for advertising or any other unnecessary purposes.</p>
+
+    <h2>3. Data Storage</h2>
+    <p>Your TON Wallet Address is stored only to ensure the proper functioning of the app.</p>
+    <p>You may request its deletion at any time.</p>
+    <p>No other data is stored.</p>
+
+    <h2>4. Third-Party Services</h2>
+    <p>The app may use the following external services:</p>
+    <ul>
+      <li><strong>Telegram API</strong> – to run the application (we do not store your personal Telegram data).</li>
+      <li><strong>TON blockchain</strong> – to verify and process payments.</li>
+    </ul>
+
+    <h2>5. Your Rights</h2>
+    <p>You have the right to:</p>
+    <ul>
+      <li>Not provide a wallet address if you do not wish to use payment features.</li>
+      <li>Request complete deletion of your wallet address.</li>
+    </ul>
+
+    <h2>6. Contact Us</h2>
+    <p>If you have any questions or suggestions regarding this Privacy Policy, please contact us at:</p>
+    <p>📧 Email: your@email.com <br>
+    🌐 Website: https://yourwebsite.com</p>
+  </div>
+
+  <script>
+    /* ======== ⭐ Background stars ======== */
+    const canvas = document.getElementById("starCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const stars = [];
+    const numStars = 55;
+
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1,
+        speed: Math.random() * 0.1 + 0.1,
+        alpha: Math.random(),
+        alphaDirection: Math.random() < 0.5 ? -1 : 1
+      });
+    }
+
+    let lastTime = performance.now();
+
+    function draw(currentTime) {
+      const delta = (currentTime - lastTime) / 16.67; 
+      lastTime = currentTime;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach((star) => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 200, 200, ${star.alpha})`;
+        ctx.fill();
+
+        star.y += star.speed * delta;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+
+        star.alpha += star.alphaDirection * 0.01 * delta;
+        if (star.alpha <= 0 || star.alpha >= 1) {
+          star.alphaDirection *= -1;
+        }
+      });
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
