@@ -9,13 +9,14 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script src="https://ad.monetag.com/monetag-tg-sdk.js" data-sdk="show_3017779"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       
 
 // Rewarded interstitial
 
-show_9784659().then(() => {
+show_3017779().then(() => {
     // You need to add your user reward function here, which will be executed after the user watches the ad.
     // For more details, please refer to the detailed instructions.
     alert('You have seen an ad!');
@@ -87,7 +88,6 @@ show_9784659().then(() => {
 }
 </style>
 
-    <script src="https://ad.monetag.com/monetag-tg-sdk.js" data-sdk="show_9784659"></script>
 </head>
 <body>
 </script>
@@ -1053,10 +1053,9 @@ function handleStart(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
-
-// ✅ Adsgram Watch Ad Task
 if (task.type === 'ad' || task.id === 11) {
-    show_9784659().then(() => {
+    show_3017779().then(() => {
+        // ✅ User finished ad → reward
         task.status = 'claimed';
         userScore += task.reward;
         permanentlyClaim(task.id);
@@ -1067,10 +1066,13 @@ if (task.type === 'ad' || task.id === 11) {
         renderTasks();
         showNotification(`+${task.reward} <i class="fas fa-star"></i> earned from ad!`);
     }).catch(err => {
-        console.log("Ad not completed", err);
+        console.log("❌ Ad not completed or failed:", err);
     });
     return;
 }
+// preload ad once app loads
+show_3017779({ type: 'preload' });
+
     // ✅ Premium Check Task
     if (task.id === 5) {
         const isPremium = Telegram.WebApp.initDataUnsafe?.user?.is_premium;
