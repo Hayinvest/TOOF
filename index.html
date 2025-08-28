@@ -1055,24 +1055,30 @@ function handleStart(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
+    // ✅ Watch an Ad task
+    if (task.type === 'ad' || task.id === 11) {
+        console.log("Trying to show Monetag ad...");
+        show_3017779().then(() => {
+            console.log("✅ Ad watched successfully!");
+            task.status = 'claimed';
+            userScore += task.reward;
+            permanentlyClaim(task.id);
+            updateScore();
+            addToHistory(task.reward, `Watched Ad: ${task.title}`);
+            saveScoreHistory();
+            saveState();
+            renderTasks();
+            showNotification(`+${task.reward} <i class="fas fa-star"></i> earned from ad!`);
+        }).catch(err => {
+            console.error("❌ Ad not completed or failed:", err);
+            showNotification("No ad available right now, try later!");
+        });
+        return;
+    }
 
-// ✅ Adsgram Watch Ad Task
-if (task.type === 'ad' || task.id === 11) {
-    show_3017779().then(() => {
-        task.status = 'claimed';
-        userScore += task.reward;
-        permanentlyClaim(task.id);
-        updateScore();
-        addToHistory(task.reward, `Watched Ad: ${task.title}`);
-        saveScoreHistory();
-        saveState();
-        renderTasks();
-        showNotification(`+${task.reward} <i class="fas fa-star"></i> earned from ad!`);
-    }).catch(err => {
-        console.log("Ad not completed", err);
-    });
-    return;
-}
+    // ... մնացած handleStart logic ...
+
+
     // ✅ Premium Check Task
     if (task.id === 5) {
         const isPremium = Telegram.WebApp.initDataUnsafe?.user?.is_premium;
