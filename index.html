@@ -10,20 +10,10 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      
 
-// Rewarded interstitial
+<script>
 
-show_3017779().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    alert('You have seen an ad!');
-})
-
-        
-    </script>
-
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -37,9 +27,6 @@ show_3017779().then(() => {
 <script>
   const tg = window.Telegram.WebApp;
   tg.expand(); // full screen
-  // Preload Monetag ad
-  show_3017779({ type: 'preload' });
-
 </script>
 
 
@@ -90,16 +77,198 @@ show_3017779().then(() => {
 }
 </style>
 
-<script src='//libtl.com/sdk.js' data-zone='3017779' data-sdk='show_3017779'></script></head>
+</head>
 <body>
 </script>
 <canvas id="starCanvas"></canvas>
   <div class="app-container">
-    <!-- Վերևի տող -->
+  <!-- Վերևի տող -->
     <div class="top-bar">
       <div class="social-icons">
-  
-<!-- Welcome Bonus Popup -->
+        <button class="shop-btn" onclick="toggleMenu()" aria-label="shop">
+          <i class="fa-solid fa-store"></i></button>
+
+          
+<div id="shopPopup" class="popup" role="dialog" aria-modal="true" aria-label="Shop">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div class="title"><i class="fa-solid fa-store"></i>  Shop</div>
+      <button class="close-btn" onclick="closeShopPopup()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="body">
+      <!-- Wallet / TON connect -->
+      <div class="wallet">
+        <div class="row">
+          <div>
+            <div style="font-weight:700; margin-bottom:4px;">Wallet</div>
+            <div id="walletStatus" style="font-size:12px; color:#aaa;">Not connected</div>
+          </div>
+          <!-- You already load TonConnect UI + create an instance elsewhere; this is just a second button placeholder -->
+          <div id="connect-shop"></div>
+        </div>
+        <div class="note">Pay with TON. After a successful on-chain payment your in-game <i class="fas fa-star"></i> balance updates automatically.</div>
+      </div>
+
+      <!-- Packs -->
+      <div class="packs">
+        <div class="card">
+          <h4>5 000 <i class="fas fa-star"></i></h4>
+          <div class="hint">No bonus</div>
+          <div class="price">0.1 TON</div>
+          <button class="buy-btn" onclick="buyPack('p1')">Buy</button>
+        </div>
+
+        <div class="card">
+          <h4>30 000 <i class="fas fa-star"></i> + 500 bonus</h4>
+          <div class="hint">Total: 30 500</div>
+          <div class="price">0.5 TON</div>
+          <button class="buy-btn" onclick="buyPack('p2')">Buy</button>
+        </div>
+
+        <div class="card">
+          <h4>65 000 <i class="fas fa-star"></i> + 1 000 bonus</h4>
+          <div class="hint">Total: 66 000</div>
+          <div class="price">1 TON</div>
+          <button class="buy-btn" onclick="buyPack('p3')">Buy</button>
+        </div>
+
+        <div class="card">
+          <h4>140 000 <i class="fas fa-star"></i> + 2 000 bonus</h4>
+          <div class="hint">Total: 142 000</div>
+          <div class="price">2 TON</div>
+          <button class="buy-btn" onclick="buyPack('p4')">Buy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ========= POPUP OPEN/CLOSE (ties into your existing shop button) ========= */
+  function toggleMenu(){ openShopPopup(); } // your button already calls this. :contentReference[oaicite:1]{index=1}
+  function openShopPopup(){
+    const el = document.getElementById('shopPopup');
+    el.classList.add('show');
+    // prevent background scroll
+    document.body.style.overflow = 'hidden';
+    ensureTonConnectForShop();
+  }
+  function closeShopPopup(){
+    const el = document.getElementById('shopPopup');
+    el.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  /* ========= TON CONNECT (reuse your instance if present) ========= */
+  // You already load TonConnect UI and create `tonConnectUI` with manifest + #connect. :contentReference[oaicite:2]{index=2}
+  // Here we also mount a button into #connect-shop inside the popup.
+  async function ensureTonConnectForShop(){
+    // Reuse existing instance if available, otherwise create one (fallback)
+    if (!window.tonConnectUI) {
+      window.tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://hayinvest.github.io/TOOF/tonconnect-manifest.json',
+        buttonRootId: 'connect'
+      });
+    }
+    // mount a secondary button into popup
+    try {
+      tonConnectUI.uiOptions = { buttonRootId: 'connect-shop' };
+      await tonConnectUI.mountWalletButton(); // will place connect button into #connect-shop
+    } catch(e) {
+      // older versions may not have mountWalletButton; fallback – recreate:
+      try {
+        window.tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+          manifestUrl: 'https://hayinvest.github.io/TOOF/tonconnect-manifest.json',
+          buttonRootId: 'connect-shop'
+        });
+      } catch(_){}
+    }
+
+    // Status text
+    const statusEl = document.getElementById('walletStatus');
+    const setStatus = () => {
+      const wc = tonConnectUI.account;
+      statusEl.textContent = wc ? `Connected` : 'Not connected';
+    };
+    setStatus();
+    tonConnectUI.onStatusChange?.(setStatus);
+  }
+
+  /* ========= PACKS + PAYMENT ========= */
+  const SHOP_ADDRESS = "UQBfrU75WGhBLnRpBs1ImWE5sPdxKsFMBgogpD578JxXyDbK"; // your address from existing code. :contentReference[oaicite:3]{index=3}
+
+  // nanotons helper
+  const nt = (ton) => (BigInt(Math.round(ton * 1e9))).toString();
+
+  const PACKS = {
+    p1: { label: "5,000★",   add: 5000,          ton: 0.1 },
+    p2: { label: "30,000★",  add: 30500,         ton: 0.5 }, // +500 bonus
+    p3: { label: "65,000★",  add: 66000,         ton: 1.0 }, // +1000 bonus
+    p4: { label: "140,000★", add: 142000,        ton: 2.0 }  // +2000 bonus
+  };
+
+  async function buyPack(id){
+    const pack = PACKS[id];
+    if(!pack){ return; }
+
+    // Require wallet
+    if (!tonConnectUI?.account) {
+      alert("Connect TON wallet first.");
+      return;
+    }
+
+    // Build transaction
+    const tx = {
+      validUntil: Math.round(Date.now()/1000) + 300, // 5min
+      messages: [
+        {
+          address: SHOP_ADDRESS,
+          amount: nt(pack.ton) // nanotons
+        }
+      ]
+    };
+
+    try {
+      await tonConnectUI.sendTransaction(tx); // sends via connected wallet. :contentReference[oaicite:4]{index=4}
+
+      // On success: add stars to localStorage score, update UI (reuse your helpers if exist)
+      const hasUpdateScore = typeof updateScore === 'function';
+      const hasAddToHistory = typeof addToHistory === 'function';
+
+      let current = parseInt(localStorage.getItem('userScore') || '0', 10);
+      current += pack.add;
+      localStorage.setItem('userScore', String(current));
+
+      if (hasAddToHistory) addToHistory(pack.add, `Purchased ${pack.label}`);
+      if (hasUpdateScore) {
+        // your updateScore() also refreshes medals and sends to server, per your file. :contentReference[oaicite:5]{index=5}
+        // Make sure a global userScore mirrors localStorage:
+        if (typeof window.userScore === 'number') window.userScore = current;
+        updateScore();
+      } else {
+        // minimal UI fallback if helper not present
+        const el = document.getElementById('userScore');
+        if (el) el.textContent = current;
+        const disp = document.getElementById('userScoreDisplay');
+        if (disp) disp.innerHTML = current.toLocaleString() + ' <i class="fas fa-star"></i>';
+      }
+
+      // small toast (reuse your showNotification if present)
+      if (typeof showNotification === 'function') {
+        showNotification(`+${pack.add} <i class="fas fa-star"></i> added!`);
+      } else {
+        alert(`Success! Added ${pack.add} ★`);
+      }
+
+    } catch (e) {
+      console.error('TON payment failed:', e);
+      alert('Payment was cancelled or failed.');
+    }
+  }
+</script>
+
+
 <div id="welcomePopup" class="popupbonus">
   <div class="popup-content">
     <h3>Welcome Bonus</h3>
@@ -143,12 +312,7 @@ window.addEventListener("load", () => {
 
 </script>
 
-        
-
-
-
-        </script>
-        
+                
       </div>
       <div class="title"></div>
       <i class="fas fa-star"></i>
@@ -323,17 +487,13 @@ profileDiv.innerHTML = `
       <div class="button-group">
        <button class="btn farmingbtn" onclick="window.location.href='mining.html'">
                 <i class="fas fa-seedling icon"></i>
-                Start Farming
+                Farming
             </button>
             
             <button class="btn spinbtn" onclick="window.location.href='spin.html'">
                 <i class="fas fa-sync-alt icon"></i>
                 Spin
             </button>
-
-
-
-
 
   </div>
 </div>
@@ -564,6 +724,8 @@ const scoreDisplay = document.getElementById('score');
 let bonus = document.createElement('div');
 bonus.id = 'bonus';
 bonus.classList.add('hidden');
+const dailyCode = "1234"; // ✅ Փոխարինիր քո օրվա կոդով
+const questCooldownKey = "dailyQuestCooldown";
 const userScoreKey = "userScore"; // 🔥 Պահում ենք score Local Storage-ում
 
 
@@ -1054,29 +1216,6 @@ if (task.icon && task.icon.startsWith('http')) {
 function handleStart(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
-
-    // ✅ Watch an Ad task
-    if (task.type === 'ad' || task.id === 11) {
-        console.log("Trying to show Monetag ad...");
-        show_3017779().then(() => {
-            console.log("✅ Ad watched successfully!");
-            task.status = 'claimed';
-            userScore += task.reward;
-            permanentlyClaim(task.id);
-            updateScore();
-            addToHistory(task.reward, `Watched Ad: ${task.title}`);
-            saveScoreHistory();
-            saveState();
-            renderTasks();
-            showNotification(`+${task.reward} <i class="fas fa-star"></i> earned from ad!`);
-        }).catch(err => {
-            console.error("❌ Ad not completed or failed:", err);
-            showNotification("No ad available right now, try later!");
-        });
-        return;
-    }
-
-    // ... մնացած handleStart logic ...
 
 
     // ✅ Premium Check Task

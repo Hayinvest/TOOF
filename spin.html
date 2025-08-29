@@ -51,6 +51,15 @@
       background: linear-gradient(45deg, #7c20ce, #5d0ba4);
       transform: translateY(-2px);
     }
+
+    #payUserScoreBtn {
+      background: linear-gradient(45deg, #8527d7, #5d0ba4);
+    }
+    
+    #payUserScoreBtn:hover:not(:disabled) {
+      background: linear-gradient(45deg, #7c20ce, #6817af);
+      transform: translateY(-2px);
+    }
     
     #spinBtn {
       background: linear-gradient(45deg, #7c20ce, #5d0ba4);
@@ -83,6 +92,19 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
+    }
+
+    .payment-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      margin: 20px 0;
+    }
+
+    .payment-option {
+      width: 100%;
+      max-width: 300px;
     }
     
     .loading {
@@ -117,7 +139,7 @@
 
     #pointer {
       position: absolute;
-      top: -40px;
+      top: -30px;
       left: 47%;
       transform: translateX(-50%);
       width: 0; 
@@ -231,6 +253,7 @@
     .fa-spinner { color: #7c20ce; } /* Purple for spinning */
     .fa-bullseye { color: white; } /* White for wheel center */
     .fa-wallet { color: #0088cc; } /* Blue for TON wallet */
+    .fa-coins { color: #ff6b35; } /* Orange for UserScore */
 
     /* Responsive design */
     @media (max-width: 480px) {
@@ -245,6 +268,12 @@
       .sector {
         font-size: 14px;
       }
+      .payment-buttons {
+        flex-direction: column;
+      }
+      .payment-option {
+        width: 100%;
+      }
     }
 
     /* TON icon in button */
@@ -253,21 +282,20 @@
       height: 20px;
     }
     canvas {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-  background: linear-gradient(90deg, #8A2BE2, #191970);
-  background-size: 200% 100%;
-
-  animation: slide 6s ease-in-out infinite alternate;
-}
-@keyframes slide {
-  0%   { background-position: left; }
-  100% { background-position: right; }
-}
-  .back-btn {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #8A2BE2, #191970);
+      background-size: 200% 100%;
+      animation: slide 6s ease-in-out infinite alternate;
+    }
+    @keyframes slide {
+      0%   { background-position: left; }
+      100% { background-position: right; }
+    }
+    .back-btn {
       background: #8225d8;
       color: #ffffff;
       border: none;
@@ -281,6 +309,17 @@ height: 100%;
       position: absolute;
       top: 4%;
     }
+
+    .insufficient-funds {
+      color: #ff4444;
+      font-size: 0.9em;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .insufficient-funds.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -292,10 +331,26 @@ height: 100%;
         <a href="index.html">
         <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
       </a>
-    <button id="payBtn" disabled>
-      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
-      Pay 0.0000001 TON & Get Spin
-    </button>
+    
+    <div class="payment-buttons">
+      <div class="payment-option">
+        <button id="payBtn" disabled>
+          <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
+          Pay 0.00001 TON & Get Spin
+        </button>
+      </div>
+      
+      <div class="payment-option">
+        <button id="payUserScoreBtn">
+          Pay 5000<i class="fas fa-star"></i> & Get Spin
+        </button>
+        <div id="insufficientFunds" class="insufficient-funds">
+          <i class="fas fa-exclamation-triangle"></i>
+          Insufficient <i class="fas fa-star"></i>! You need 5000 points.
+        </div>
+      </div>
+    </div>
+
     <div class="loading" id="loading">
       <i class="fas fa-hourglass-half"></i> Processing payment...
     </div>
@@ -313,7 +368,7 @@ height: 100%;
       <i class="fas fa-ticket-alt"></i> Spins left: 0
     </div>
     <div id="userScore">
-      <i class="fas fa-star"></i> UserScore: 0
+      <i class="fas fa-star"></i>: 0
     </div>
     <div id="result"></div>
   </div>
@@ -322,6 +377,7 @@ height: 100%;
     const BACKEND_URL = "https://ton-check.onrender.com";
     const RECEIVER = "UQBfrU75WGhBLnRpBs1ImWE5sPdxKsFMBgogpD578JxXyDbK";
     const AMOUNT = 100; // 0.0000001 TON
+    const USER_SCORE_COST = 5000; // Cost in userScore for 1 spin
 
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: "https://hayinvest.github.io/TOOF/tonconnect-manifest.json",
@@ -334,11 +390,13 @@ height: 100%;
     let isSpinning = false;
 
     const payBtn = document.getElementById("payBtn");
+    const payUserScoreBtn = document.getElementById("payUserScoreBtn");
     const spinBtn = document.getElementById("spinBtn");
     const resultEl = document.getElementById("result");
     const spinsEl = document.getElementById("spinsLeft");
     const loadingEl = document.getElementById("loading");
     const userScoreEl = document.getElementById("userScore");
+    const insufficientFundsEl = document.getElementById("insufficientFunds");
     const wheel = document.getElementById("wheel");
 
     // Rewards with better distribution
@@ -347,21 +405,39 @@ height: 100%;
     let totalWeight = weights.reduce((a,b)=>a+b,0);
 
     function updateUserScore() {
-      userScoreEl.innerHTML = '<i class="fas fa-star"></i> UserScore: ' + userScore.toLocaleString();
+      userScoreEl.innerHTML = '<i class="fas fa-star"></i> : ' + userScore.toLocaleString();
       localStorage.setItem("userScore", userScore);
+      updatePaymentButtons();
     }
     updateUserScore();
+
+    function updatePaymentButtons() {
+      // Update TON payment button
+      payBtn.disabled = !tonConnectUI.account || isSpinning;
+      
+      // Update UserScore payment button
+      const canPayWithUserScore = userScore >= USER_SCORE_COST && !isSpinning;
+      payUserScoreBtn.disabled = !canPayWithUserScore;
+      
+      // Show/hide insufficient funds message
+      if (userScore < USER_SCORE_COST && !isSpinning) {
+        insufficientFundsEl.classList.add('show');
+      } else {
+        insufficientFundsEl.classList.remove('show');
+      }
+    }
 
     function updateSpins() {
       spinsEl.innerHTML = '<i class="fas fa-ticket-alt"></i> Spins left: ' + spins;
       spinBtn.disabled = spins <= 0 || isSpinning;
-      payBtn.disabled = !tonConnectUI.account || isSpinning;
+      updatePaymentButtons();
     }
     updateSpins();
 
     function showLoading(show = true) {
       loadingEl.classList.toggle('show', show);
       payBtn.disabled = show || !tonConnectUI.account;
+      payUserScoreBtn.disabled = show || userScore < USER_SCORE_COST;
     }
 
     function showResult(message, isSuccess = false) {
@@ -422,12 +498,13 @@ height: 100%;
     }
 
     // TON wallet handling
-    tonConnectUI.connectionRestored.then(()=>updateSpins());
-    tonConnectUI.onStatusChange(()=>updateSpins());
+    tonConnectUI.connectionRestored.then(()=>updatePaymentButtons());
+    tonConnectUI.onStatusChange(()=>updatePaymentButtons());
 
+    // TON Payment
     payBtn.addEventListener("click", async () => {
       showLoading(true);
-      showResult("Processing payment...");
+      showResult("Processing TON payment...");
       try {
         const tx = {
           validUntil: Math.floor(Date.now()/1000)+600,
@@ -436,7 +513,7 @@ height: 100%;
         const sendRes = await tonConnectUI.sendTransaction(tx);
         if (!sendRes) throw new Error("Transaction cancelled");
 
-        showResult("Verifying payment...");
+        showResult("Verifying TON payment...");
         await new Promise(r=>setTimeout(r,3000));
 
         const response = await fetch(`${BACKEND_URL}/check-payment`, {
@@ -447,11 +524,41 @@ height: 100%;
         if (data.success) {
           spins++;
           updateSpins();
-          showResult("Payment verified! 1 spin added!", true);
-        } else showResult("Payment verification failed");
+          showResult("TON payment verified! 1 spin added!", true);
+        } else showResult("TON payment verification failed");
       } catch(err) {
-        showResult("Payment failed: "+err.message);
+        showResult("TON payment failed: "+err.message);
       } finally { showLoading(false); }
+    });
+
+    // UserScore Payment
+    payUserScoreBtn.addEventListener("click", async () => {
+      if (userScore < USER_SCORE_COST) {
+        showResult(`Insufficient UserScore! You need ${USER_SCORE_COST.toLocaleString()} points.`);
+        return;
+      }
+
+      showLoading(true);
+      showResult("Processing UserScore payment...");
+      
+      try {
+        // Simulate processing time
+        await new Promise(r => setTimeout(r, 1500));
+        
+        // Deduct UserScore
+        userScore -= USER_SCORE_COST;
+        updateUserScore();
+        
+        // Add spin
+        spins++;
+        updateSpins();
+        
+        showResult(`UserScore payment successful! ${USER_SCORE_COST.toLocaleString()} points deducted. 1 spin added!`, true);
+      } catch (err) {
+        showResult("UserScore payment failed: " + err.message);
+      } finally {
+        showLoading(false);
+      }
     });
 
     // Enhanced spin logic
@@ -486,6 +593,49 @@ height: 100%;
         }, 3000);
       }
     });
+
+    // Initialize star canvas background
+    const canvas = document.getElementById('starCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Create stars
+    const stars = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.8 + 0.2,
+        speed: Math.random() * 0.02 + 0.01
+      });
+    }
+    
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      stars.forEach(star => {
+        star.alpha += star.speed;
+        if (star.alpha > 1) star.speed = -Math.abs(star.speed);
+        if (star.alpha < 0.2) star.speed = Math.abs(star.speed);
+        
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+        ctx.fill();
+      });
+      
+      requestAnimationFrame(animateStars);
+    }
+    
+    animateStars();
   </script>
 </body>
 </html>

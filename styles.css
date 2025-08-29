@@ -998,7 +998,7 @@ width: 100px;
   transform: translateY(-4px);
 }
 .fa-star {
-  color: #8A2BE2; /* Ոսկեգույն */
+  color: #ffffff; /* Ոսկեգույն */
   text-shadow: 0 0 8px rgba(194, 194, 194, 0.641); /* Բացվածքային փայլ */
 }
 .delete-btn {
@@ -1181,14 +1181,13 @@ h2{
 }
 
 
-/* Հենց սա ամրացնում է կոճակները ներքևում */
 .button-group {
   margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row; /* column-ի փոխարեն */
   align-items: center;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
+  display: flex;
+  gap: 15px;
 }
 
 .custom-btn {
@@ -1382,27 +1381,34 @@ input[type=number] {
 
 .farmingbtn{ 
   padding: 10px 20px;
-  font-size: 16px;
-      background: linear-gradient(45deg, #7c20ce, #650eb2);
-  color: white;
-  border: none;
-  border-radius: 14px;
-  width: 105%;
-  border: #ffffff solid 2px;
-  font-weight: bold;
+    font-size: 16px;
+    background: linear-gradient(45deg, #7c20ce, #650eb2);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    border: #ffffff solid 2px;
+    font-weight: bold;
+    height: 88px;
+  animation: wave 8s ease infinite;
 
 }
 .spinbtn{
-    padding: 10px 20px;
-  font-size: 16px;
-      background: linear-gradient(45deg, #7c20ce, #650eb2);
-  color: white;
-  border: none;
-  border-radius: 14px;
-  width: 105%;
-  border: #ffffff solid 2px;
-  font-weight: bold;
+  padding: 10px 20px;
+    font-size: 16px;
+    background: linear-gradient(45deg, #7c20ce, #650eb2);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    border: #ffffff solid 2px;
+    font-weight: bold;
+    height: 88px;
+  animation: wave 8s ease infinite;
 
+}
+
+
+.farmingbtn, .spinbtn {
+    flex: 1;
 }
 .play-icon {
   width: 28px;   /* փոխիր ըստ ցանկության */
@@ -1419,3 +1425,80 @@ input[type=number] {
   height: 28px;
   fill: rgb(240, 240, 240);   /* գույնը */
 }
+.shop-btn {
+  position: fixed;
+  right: 0.5%;
+  top: 0.3%;
+  background: linear-gradient(45deg, #7c20ce, #650eb2);
+  color: white;
+  border: none;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  border: #ffffff solid 2px;
+}
+  /* Fullscreen dark overlay */
+  #shopPopup.popup {
+    display: none; /* will be toggled via JS */
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(2px);
+  }
+  #shopPopup .sheet {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    color: #fff;
+  }
+  #shopPopup .sheet-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 6px;
+  }
+  #shopPopup .title {
+    font-size: 18px; font-weight: 700; letter-spacing: .3px;
+  }
+  #shopPopup .close-btn {
+    background: #7c20ce; border: 2px solid #ffffff; color:#fff;
+    padding: 3px 8px; border-radius: 14px;
+  }
+  #shopPopup .body {
+    flex: 1; overflow: auto; padding: 10px 2px 120px;
+  }
+  #shopPopup .packs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 430px) {
+    #shopPopup .packs { grid-template-columns: 1fr 1fr; }
+  }
+  #shopPopup .card {
+    background: #7c20ce; border: 1px solid #fefefe; border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.35);
+  }
+  #shopPopup .card h4 { margin: 0 0 6px; font-size: 16px; }
+  #shopPopup .card .hint { color:#d3d3d3; font-size: 12px; margin-bottom: 8px; }
+  #shopPopup .price { font-weight: 800; font-size: 15px; margin: 6px 0 10px; }
+  #shopPopup .buy-btn {
+    width: 100%;
+    background: linear-gradient(45deg, #7c20ce, #650eb2);
+    color:#fff; border:0; border-radius: 12px; padding: 10px 14px;
+    cursor:pointer; font-weight:700;
+    border: solid 2px #fff;
+  }
+  #shopPopup .wallet {
+    background:#151515; border:1px solid #ffffff; border-radius:14px;
+    padding: 12px; margin-bottom: 14px;
+  }
+  #shopPopup .wallet .row {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  #shopPopup .note { color:#9b9b9b; font-size: 12px; margin-top: 8px; }
+  /* slide-in anim */
+  #shopPopup.show { display: block; animation: shopFade .18s ease-out both; }
+  @keyframes shopFade { from{opacity:0} to{opacity:1} }
