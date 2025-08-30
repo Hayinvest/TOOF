@@ -10,9 +10,9 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <script>
-
+const AdController = window.Adsgram.init({ blockId: "14337" });
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -1243,8 +1243,32 @@ if (task.icon && task.icon.startsWith('http')) {
  * Handle the Start button click
  */
 function handleStart(taskId) {
+  if (task.type === 'ad') {
+    showAdAndReward(task);
+    return;
+}
+
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
+async function showAdAndReward(task) {
+    try {
+        await AdController.show(); // Գովազդի ցուցադրում
+
+        userScore += task.reward;
+        updateScore();
+        addToHistory(task.reward, `Watched Ad: ${task.title}`);
+        saveScoreHistory();
+        showNotification(`+${task.reward} <i class="fas fa-star"></i>`);
+
+        permanentlyClaim(task.id);
+        tasks = tasks.filter(t => t.id !== task.id);
+        saveState();
+        renderTasks();
+    } catch (err) {
+        console.warn("Ad not completed:", err);
+        showNotification("❌ Ad was not completed!");
+    }
+}
 
 
     // ✅ Premium Check Task
