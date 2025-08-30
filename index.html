@@ -85,10 +85,41 @@
   <!-- Վերևի տող -->
     <div class="top-bar">
       <div class="social-icons">
-        <button class="shop-btn" onclick="toggleMenu()" aria-label="shop">
-          <i class="fa-solid fa-store"></i></button>
+    <div class="top-buttons">
+  <button class="shop-btn" onclick="toggleMenu()" aria-label="shop">
+    <i class="fa-solid fa-store"></i>
+  </button>
+
+  <button class="premium-btn" onclick="openPremium()" aria-label="premium">
+    <i class="fa-solid fa-crown"></i>
+  </button>
+</div>
 
           
+<!-- Premium Popup -->
+<div id="premiumPopup" class="premium-popup">
+  <div class="premium-popup-content">
+    <span class="premium-close-btn" onclick="closePremium()">&times;</span>
+    <h2 class="premium-title">Premium Package</h2>
+    <p class="premium-text">Unlock premium features and enjoy the benefits:</p>
+    <ul class="premium-benefits">
+      <li>✔️ Faster farming speed</li>
+      <li>✔️ Bonus rewards</li>
+      <li>✔️ Exclusive skins & effects</li>
+    </ul>
+
+    <div class="premium-transaction-buttons">
+      <button class="premium-ton-btn" onclick="buyPremium(1)">
+        Pay 1      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
+      </button>
+      <button class="premium-ton-btn" onclick="buyPremium(2)">
+        Pay 2      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
+      </button>
+    </div>
+  </div>
+</div>
+
+
 <div id="shopPopup" class="popup" role="dialog" aria-modal="true" aria-label="Shop">
   <div class="sheet">
     <div class="sheet-header">
@@ -115,28 +146,28 @@
         <div class="card">
           <h4>5 000 <i class="fas fa-star"></i></h4>
           <div class="hint">No bonus</div>
-          <div class="price">0.1 TON</div>
+          <div class="price">0.1           <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
           <button class="buy-btn" onclick="buyPack('p1')">Buy</button>
         </div>
 
         <div class="card">
           <h4>30 000 <i class="fas fa-star"></i> + 500 bonus</h4>
           <div class="hint">Total: 30 500</div>
-          <div class="price">0.5 TON</div>
+          <div class="price">0.5      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
           <button class="buy-btn" onclick="buyPack('p2')">Buy</button>
         </div>
 
         <div class="card">
           <h4>65 000 <i class="fas fa-star"></i> + 1 000 bonus</h4>
           <div class="hint">Total: 66 000</div>
-          <div class="price">1 TON</div>
+          <div class="price">1      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
           <button class="buy-btn" onclick="buyPack('p3')">Buy</button>
         </div>
 
         <div class="card">
           <h4>140 000 <i class="fas fa-star"></i> + 2 000 bonus</h4>
           <div class="hint">Total: 142 000</div>
-          <div class="price">2 TON</div>
+          <div class="price">2      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
           <button class="buy-btn" onclick="buyPack('p4')">Buy</button>
         </div>
       </div>
@@ -145,6 +176,19 @@
 </div>
 
 <script>
+function openPremium() {
+  document.getElementById('premiumPopup').style.display = 'flex';
+}
+
+function closePremium() {
+  document.getElementById('premiumPopup').style.display = 'none';
+}
+
+function buyPremium(amount) {
+  alert(`Processing ${amount} TON transaction...`);
+}
+
+
   /* ========= POPUP OPEN/CLOSE (ties into your existing shop button) ========= */
   function toggleMenu(){ openShopPopup(); } // your button already calls this. :contentReference[oaicite:1]{index=1}
   function openShopPopup(){
@@ -411,27 +455,10 @@ profileDiv.innerHTML = `
     box-shadow:0 4px 10px rgba(0,0,0,0.5);
     color:#fff;
     border-top:2px solid #fff; 
-    margin-top:-26px;
+    margin-top:-20px;
     flex-direction: column;
   ">
-    <!-- History Button -->
-    <button style="
-      position: absolute;
-      top:10px;
-      right:10px;
-      background: transparent;
-      border: none;
-      padding:5px;
-      display: flex;
-      border: 2px solid #fff;
-      border-radius: 10px;
-      align-items: center;
-      justify-content: center;
-    " id="historyBtn">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20" fill="#fff">
-        <path d="M320 128C426 128 512 214 512 320C512 426 426 512 320 512C254.8 512 197.1 479.5 162.4 429.7C152.3 415.2 132.3 411.7 117.8 421.8C103.3 431.9 99.8 451.9 109.9 466.4C156.1 532.6 233 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C234.3 64 158.5 106.1 112 170.7L112 144C112 126.3 97.7 112 80 112C62.3 112 48 126.3 48 144L48 256C48 273.7 62.3 288 80 288L104.6 288C105.1 288 105.6 288 106.1 288L192.1 288C209.8 288 224.1 273.7 224.1 256C224.1 238.3 209.8 224 192.1 224L153.8 224C186.9 166.6 249 128 320 128zM344 216C344 202.7 333.3 192 320 192C306.7 192 296 202.7 296 216L296 320C296 326.4 298.5 332.5 303 337L375 409C384.4 418.4 399.6 418.4 408.9 409C418.2 399.6 418.3 384.4 408.9 375.1L343.9 310.1L343.9 216z"/>
-      </svg>
-    </button>
+   
 
     <div style="display:flex;align-items:center;width:100%;gap:10px;">
       <img src="${user.photo_url || ''}" 
@@ -485,15 +512,17 @@ profileDiv.innerHTML = `
     <div class="score-text" id="userScoreDisplay">0</div>
     <div id="medalsContainer" onclick="openRewardPopup()"></div>
       <div class="button-group">
-       <button class="btn farmingbtn" onclick="window.location.href='mining.html'">
-                <i class="fas fa-seedling icon"></i>
-                Farming
-            </button>
+      <button class="farmingbtn">
+  <img src="High Voltage.webp" class="volt" alt="voltage">
+  <span>Earn</span>
+</button>
+
             
-            <button class="btn spinbtn" onclick="window.location.href='spin.html'">
-                <i class="fas fa-sync-alt icon"></i>
-                Spin
-            </button>
+ <button class="btn spinbtn" onclick="window.location.href='spin.html'">
+    <img src="Video Game.webp" alt="play" class="spin-img">
+    <span>Spin</span>
+</button>
+
 
   </div>
 </div>

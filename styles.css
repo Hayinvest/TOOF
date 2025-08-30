@@ -1379,31 +1379,38 @@ input[type=number] {
 }
 
 
-.farmingbtn{ 
+.farmingbtn {
+  display: flex;
+  flex-direction: column; /* Նկարը վերևում, տեքստը ներքևում */
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
-    font-size: 16px;
-    background: linear-gradient(45deg, #7c20ce, #650eb2);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    border: #ffffff solid 2px;
-    font-weight: bold;
-    height: 88px;
+  font-size: 16px;
+  background: linear-gradient(45deg, #7d20ce60, #650eb2);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  border: #ffffff solid 2px;
+  font-weight: bold;
+  height: 120px; /* Կոճակի բարձրությունը մեծացրու */
   animation: wave 8s ease infinite;
-
 }
-.spinbtn{
+.spinbtn {
+  display: flex;
+  flex-direction: column; /* Նկարը վերևում, տեքստը ներքևում */
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
-    font-size: 16px;
-    background: linear-gradient(45deg, #7c20ce, #650eb2);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    border: #ffffff solid 2px;
-    font-weight: bold;
-    height: 88px;
+  font-size: 16px;
+  background: linear-gradient(45deg, #7d20ce60, #650eb2);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  border: #ffffff solid 2px;
+  font-weight: bold;
+  height: 120px; /* Բարձրություն, որ տեղավորվեն նկարը և տեքստը */
   animation: wave 8s ease infinite;
-
+  
 }
 
 
@@ -1425,15 +1432,31 @@ input[type=number] {
   height: 28px;
   fill: rgb(240, 240, 240);   /* գույնը */
 }
-.shop-btn {
+
+
+.top-buttons {
   position: fixed;
-  right: 0.5%;
-  top: 0.3%;
+  top: 0.5%;
+  right: 1%;
+  display: flex;
+  gap: 5px; /* Հեռավորություն կոճակների միջև */
+}
+
+.shop-btn {
   background: linear-gradient(45deg, #7c20ce, #650eb2);
   color: white;
   border: none;
   padding: 9px 10px;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  border: #ffffff solid 2px;
+}
+.premium-btn{
+   background: linear-gradient(45deg, #7c20ce, #650eb2);
+  color: white;
+  border: none;
+  padding: 9px 10px;
+  border-radius: 10px;
   font-size: 13.5px;
   border: #ffffff solid 2px;
 }
@@ -1502,3 +1525,137 @@ input[type=number] {
   /* slide-in anim */
   #shopPopup.show { display: block; animation: shopFade .18s ease-out both; }
   @keyframes shopFade { from{opacity:0} to{opacity:1} }
+
+ .volt {
+  height: 55px;
+  width: 55px;
+  margin-bottom: 10px; /* Փոքր հեռավորություն նկարի և տեքստի միջև */
+}
+.spinbtn .spin-img {
+  height: 55px;
+  width: 55px;
+  margin-bottom: 10px;
+}
+.top-buttons {
+  position: fixed;
+  top: 0.5%;
+  right: 1%;
+  display: flex;
+  gap: 10px;
+  z-index: 1100;
+}
+
+
+/* Popup Background */
+.premium-popup {
+  display: none; /* hides popup on load */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Popup Content */
+.premium-popup-content {
+  background: linear-gradient(145deg, #1f1f1f, #292929);
+  color: white;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: scaleIn 0.25s ease-in-out;
+}
+
+/* Title & Text */
+.premium-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.premium-text {
+  font-size: 16px;
+  opacity: 0.85;
+  margin-bottom: 15px;
+}
+
+/* Benefits List */
+.premium-benefits {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.premium-benefits li {
+  padding: 6px 0;
+  font-size: 15px;
+}
+
+/* Buttons */
+.premium-ton-btn {
+  background: linear-gradient(45deg, #7c20ce, #650eb2);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  margin: 10px 5px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 45%;
+  transition: 0.2s;
+}
+
+.premium-ton-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+/* Close Button */
+.premium-close-btn {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.premium-close-btn:hover {
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes scaleIn {
+  from {transform: scale(0.95);}
+  to {transform: scale(1);}
+}
+
+/* Mobile Friendly */
+@media (max-width: 500px) {
+  .premium-popup-content {
+    padding: 15px;
+    border-radius: 12px;
+  }
+  .premium-title {
+    font-size: 20px;
+  }
+  .premium-ton-btn {
+    width: 100%;
+    margin: 8px 0;
+  }
+}
+.ton-icon {
+      width: 20px;
+      height: 20px;
+    }
