@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <script>
-const AdController = window.Adsgram.init({ blockId: "14337" });
+
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -990,7 +990,41 @@ function trackLoginDay() {
         localStorage.setItem("loginDays", JSON.stringify(loginDays));
     }
 }
+  // Adsgram initialization
+  const AdController = window.Adsgram.init({ blockId: "14337" });
+  console.log("Adsgram Initialized:", AdController);
 
+  async function showAdAndReward(task) {
+      try {
+          console.log("Showing Ad for Task:", task);
+          await AdController.show();
+
+          userScore += task.reward;
+          updateScore();
+          addToHistory(task.reward, `Watched Ad: ${task.title}`);
+          saveScoreHistory();
+          showNotification(`+${task.reward} <i class="fas fa-star"></i>`);
+
+          permanentlyClaim(task.id);
+          tasks = tasks.filter(t => t.id !== task.id);
+          saveState();
+          renderTasks();
+          console.log("Ad Completed. Score Updated:", userScore);
+      } catch (err) {
+          console.warn("Ad not completed:", err);
+          showNotification("❌ Ad was not completed!");
+      }
+  }
+
+  function handleStart(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      // Check for Ads task first
+      if (task.type === 'ad') {
+          showAdAndReward(task);
+          return;
+      }}
 // Քանի անգամ խաղը բացեն՝ գրանցի օրը
 trackLoginDay();
 
@@ -1243,32 +1277,8 @@ if (task.icon && task.icon.startsWith('http')) {
  * Handle the Start button click
  */
 function handleStart(taskId) {
-  if (task.type === 'ad') {
-    showAdAndReward(task);
-    return;
-}
-
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
-async function showAdAndReward(task) {
-    try {
-        await AdController.show(); // Գովազդի ցուցադրում
-
-        userScore += task.reward;
-        updateScore();
-        addToHistory(task.reward, `Watched Ad: ${task.title}`);
-        saveScoreHistory();
-        showNotification(`+${task.reward} <i class="fas fa-star"></i>`);
-
-        permanentlyClaim(task.id);
-        tasks = tasks.filter(t => t.id !== task.id);
-        saveState();
-        renderTasks();
-    } catch (err) {
-        console.warn("Ad not completed:", err);
-        showNotification("❌ Ad was not completed!");
-    }
-}
 
 
     // ✅ Premium Check Task
