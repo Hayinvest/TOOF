@@ -10,7 +10,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
 <script>
 
 </script>
@@ -880,10 +880,10 @@ document.getElementById('closeHistoryBtn').addEventListener('click', closeHistor
 const defaultTasks = [
 {
     id: 1,
-    title: 'Join Telegram Channel',
+    title: 'Join Hayinvest Channel',
     icon: '<i class="fab fa-telegram-plane" style="color: #ffffffef; font-size: 1.5em;"></i>',
-    link: 'https://t.me/HyperrVersee',
-    reward: 2000,
+    link: 'https://t.me/hay_invest',
+    reward: 1000,
     status: 'pending',
     claimAvailable: false,
     timerId: null
@@ -891,8 +891,8 @@ const defaultTasks = [
 {
     id: 2,
     title: 'Join X Community',
-    link: 'https://x.com/HyperVerse_TG',
-    reward: 2000,
+    link: 'https://x.com/hayinvestt',
+    reward: 1000,
     status: 'pending',
     claimAvailable: false,
     timerId: null,
@@ -900,19 +900,19 @@ const defaultTasks = [
 },
 {
     id: 4,
-    title: 'Follow TikTok',
-    link: 'https://www.tiktok.com/@hyper_verse_', // Փոխարինիր իրական հղումով
-    reward: 2000,
+    title: 'Follow Instagram channel',
+    link: 'https://www.instagram.com/hayinvest/', // Փոխարինիր իրական հղումով
+    reward: 1000,
     status: 'pending',
     claimAvailable: false,
     timerId: null,
-    icon: '<i class="fab fa-tiktok" style="color: #ffffffef; font-size: 1.4em;"></i>'
+    icon: '<i class="fab fa-instagram" style="color: #ffffffef; font-size: 1.4em;"></i>'
 },
 {
     id: 5,
     title: 'Verify Telegram Premium',
     link: '',
-    reward: 5000,
+    reward: 2000,
     status: 'pending',
     claimAvailable: false,
     timerId: null,
@@ -922,7 +922,7 @@ const defaultTasks = [
     id: 6,
     title: '3-Day Reward Streak',
     link: '',
-    reward: 3000,
+    reward: 1000,
     status: 'pending',
     claimAvailable: false,
     timerId: null,
@@ -933,7 +933,7 @@ const defaultTasks = [
     id: 7,
     title: '5-Day Reward Streak',
     link: '',
-    reward: 5000,
+    reward: 2000,
     status: 'pending',
     claimAvailable: false,
     timerId: null,
@@ -943,7 +943,7 @@ const defaultTasks = [
     id: 8,
     title: '10-Day Reward Streak',
     link: '',
-    reward: 10000,
+    reward: 3000,
     status: 'pending',
     claimAvailable: false,
     timerId: null,
@@ -990,41 +990,7 @@ function trackLoginDay() {
         localStorage.setItem("loginDays", JSON.stringify(loginDays));
     }
 }
-  // Adsgram initialization
-  const AdController = window.Adsgram.init({ blockId: "14337" });
-  console.log("Adsgram Initialized:", AdController);
 
-  async function showAdAndReward(task) {
-      try {
-          console.log("Showing Ad for Task:", task);
-          await AdController.show();
-
-          userScore += task.reward;
-          updateScore();
-          addToHistory(task.reward, `Watched Ad: ${task.title}`);
-          saveScoreHistory();
-          showNotification(`+${task.reward} <i class="fas fa-star"></i>`);
-
-          permanentlyClaim(task.id);
-          tasks = tasks.filter(t => t.id !== task.id);
-          saveState();
-          renderTasks();
-          console.log("Ad Completed. Score Updated:", userScore);
-      } catch (err) {
-          console.warn("Ad not completed:", err);
-          showNotification("❌ Ad was not completed!");
-      }
-  }
-
-  function handleStart(taskId) {
-      const task = tasks.find(t => t.id === taskId);
-      if (!task) return;
-
-      // Check for Ads task first
-      if (task.type === 'ad') {
-          showAdAndReward(task);
-          return;
-      }}
 // Քանի անգամ խաղը բացեն՝ գրանցի օրը
 trackLoginDay();
 
