@@ -1260,37 +1260,179 @@ function handleStart(taskId) {
 
 
 
-     // ✅ AdsGram Ad Task Handler
-    if (task.id === 12 && task.type === 'ad') {
-        // Initialize AdsGram
-        window.Adsgram = window.Adsgram || {};
-        window.Adsgram.init({ blockId: "14425" }); // փոխարինեք ձեր Block ID-ով
+let adsgramController = null;
 
-        // Show ad
-        if (window.Adsgram && window.Adsgram.show) {
-            window.Adsgram.show().then((result) => {
-                if (result.done) {
-                    // Ad watched successfully
-                    task.status = 'started';
-                    task.claimAvailable = true;
-                    renderTasks();
-                    saveState();
-                    showNotification("Ad watched! You can claim your reward now!");
-                } else {
-                    // Ad was not watched completely
-                    showNotification("Please watch the ad completely to get the reward.");
-                }
-            }).catch((error) => {
-                console.error("AdsGram error:", error);
-                showNotification("Ad loading failed. Please try again later.");
-            });
+function initAdsGram() {
+    if (!window.Adsgram) {
+        console.error('AdsGram not loaded');
+        return null;
+    }
+    
+    // Եթե արդեն կա controller, վերադարձնել նույնը
+    if (adsgramController) {
+        return adsgramController;
+    }
+    
+    try {
+        // API-ի համաձայն init-ը վերադարձնում է AdController
+        adsgramController = window.Adsgram.init({
+            blockId: "14425", // Ձեր իրական Block ID
+            debug: false // ԿԱՐԵՎՈՐ: production-ում պետք է false լինի
+            // debugBannerType: "FullscreenMedia" // կարող եք ուղարկել test-ի համար
+        });
+        
+        // Event listeners-ներ ավելացնել
+        setupAdsgramListeners();
+        
+        return adsgramController;
+    } catch (error) {
+        console.error('AdsGram initialization failed:', error);
+        return null;
+    }
+}
+
+function setupAdsgramListeners() {
+    if (!adsgramController) return;
+    
+    // Ավելի մանրամասն control-ի համար
+    adsgramController.addEventListener('onStart', () => {
+        console.log('Ad started');
+    });
+    
+    adsgramController.addEventListener('onReward', () => {
+        console.log('User earned reward');
+        // Reward տալու logic-ը այստեղ
+        handleAdReward();
+    });
+    
+    adsgramController.addEventListener('onError', (error) => {
+        console.error('Ad error:', error);
+        showNotification("Ad loading failed. Please try again later.");
+    });
+    
+    adsgramController.addEventListener('onBannerNotFound', () => {
+        console.log('No ads available');
+        showNotification("No ads available at the moment.");
+    });
+    
+    adsgramController.addEventListener('onNonStopShow', () => {
+        console.log('Too many ads in a row');
+        showNotification("Please wait before watching another ad.");
+    });
+    
+    adsgramController.addEventListener('onTooLongSession', () => {
+        console.log('Session too long');
+        showNotification("Please restart the app to continue watching ads.");
+    });
+}
+
+// Բարելավված ad showing function
+async function showAdsGramAd() {
+    const controller = initAdsGram();
+    if (!controller) {
+        showNotification("Ad service is not available.");
+        return false;
+    }
+    
+    try {
+        // API-ի համաձայն show() Promise է վերադարձնում
+        const result = await controller.show();
+        
+        // result.done = true նշանակում է user-ը ամբողջությամբ դիտել է
+        if (result.done) {
+            console.log('Ad watched completely:', result);
+            return true; // Successful watch
         } else {
-            // Fallback if AdsGram is not loaded
-            showNotification("Ad service is not available. Please try again later.");
+            console.log('Ad not completed:', result);
+            return false; // Skipped or error
         }
+        
+    } catch (error) {
+        // catch-ը նույնպես ShowPromiseResult է
+        console.log('Ad interrupted or failed:', error);
+        
+        if (error.error) {
+            showNotification("Ad loading failed. Please try again later.");
+        } else {
+            showNotification("Ad was skipped.");
+        }
+        
+        return false;
+    }
+}
+
+// Reward handling function
+function handleAdReward() {
+    const task = tasks.find(t => t.id === 12 && t.type === 'ad');
+    if (task) {
+        task.status = 'started';
+        task.claimAvailable = true;
+        renderTasks();
+        saveState();
+        showNotification("Ad watched! You can claim your reward now!");
+    }
+}
+
+// Task handler-ում փոփոխություն
+function handleStart(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    // AdsGram Ad Task Handler (ID 12)
+    if (task.id === 12 && task.type === 'ad') {
+        showAdsGramAd().then((success) => {
+            if (success) {
+                // Successful ad watch - reward-ը կտրվի onReward event-ում
+                console.log('Ad watch successful');
+            } else {
+                // Failed or skipped
+                console.log('Ad was not completed');
+            }
+        });
         return;
     }
+    
+    // Մնացած task-ների logic-ը...
+}
 
+// Script loading-ի ստուգում
+function checkAdsGramLoaded() {
+    return new Promise((resolve) => {
+        if (window.Adsgram) {
+            resolve(true);
+            return;
+        }
+        
+        const checkInterval = setInterval(() => {
+            if (window.Adsgram) {
+                clearInterval(checkInterval);
+                resolve(true);
+            }
+        }, 100);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            resolve(false);
+        }, 10000);
+    });
+}
+
+// Initialize երբ page load է լինում
+document.addEventListener('DOMContentLoaded', async () => {
+    const loaded = await checkAdsGramLoaded();
+    if (loaded) {
+        console.log('AdsGram loaded successfully');
+        initAdsGram();
+    } else {
+        console.error('AdsGram failed to load');
+    }
+    
+    // Մնացած initialization...
+    loadState();
+    setupTabs();
+    // ...
+});
 
     // ✅ Premium Check Task
     if (task.id === 5) {
