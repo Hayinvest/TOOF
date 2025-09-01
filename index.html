@@ -10,15 +10,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-<script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-        const adexiumWidget = new AdexiumWidget({wid: '492216b4-b7d4-4bc7-80ac-511ff757de0a', adFormat: 'interstitial'});
-        adexiumWidget.autoMode();
-    });
-</script>
 <script>
 
 </script>
@@ -520,7 +512,8 @@ profileDiv.innerHTML = `
     <div class="score-text" id="userScoreDisplay">0</div>
     <div id="medalsContainer" onclick="openRewardPopup()"></div>
       <div class="button-group">
-      <button class="farmingbtn">
+
+  <button class="farmingbtn" onclick="window.location.href='mining.html'">
   <img src="https://raw.githubusercontent.com/Hayinvest/TOOF/refs/heads/main/High%20Voltage.webp" class="volt" alt="voltage">
   <span>Earn</span>
 </button>
@@ -886,6 +879,17 @@ function closeHistoryPopup() {
 document.getElementById('closeHistoryBtn').addEventListener('click', closeHistoryPopup);
 
 const defaultTasks = [
+  {
+    id: 12,
+    title: 'Watch an Ads',
+    reward: 500,
+    status: 'pending',
+    claimAvailable: false,
+    timerId: null,
+    icon: '<i class="fas fa-play-circle" style="color: #ffffffef; font-size: 1.4em;"></i>',
+    type: 'ad'
+},
+
 {
     id: 1,
     title: 'Join Hayinvest Channel',
@@ -1246,44 +1250,13 @@ if (task.icon && task.icon.startsWith('http')) {
         taskList.appendChild(noTasksMessage);
     }
 }
-let adexiumWidget;
-
-document.addEventListener('DOMContentLoaded', () => {
-  adexiumWidget = new AdexiumWidget({
-    wid: '492216b4-b7d4-4bc7-80ac-511ff757de0a',
-    adFormat: 'interstitial'
-  });
-});
-
-function showAdAndReward(taskId) {
-  if (!adexiumWidget) {
-    console.error("Adexium widget չի բեռնվել։");
-    return;
-  }
-
-  adexiumWidget.showAd(() => {
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      task.status = 'started';
-      task.claimAvailable = true;
-      renderTasks();
-      saveState();
-      showNotification("Գովազդը դիտվեց։ Կարող ես վերցնել պարգևը։");
-    }
-  });
-}
 
 /**
  * Handle the Start button click
  */
- 
 function handleStart(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
-if (task.type === 'ad') {
-    showAdAndReward(task.id);
-    return;
-}
 
 
     // ✅ Premium Check Task
