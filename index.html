@@ -10,7 +10,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<script async src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <script>
 
 </script>
@@ -1257,6 +1257,39 @@ if (task.icon && task.icon.startsWith('http')) {
 function handleStart(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
+
+
+
+     // ✅ AdsGram Ad Task Handler
+    if (task.id === 12 && task.type === 'ad') {
+        // Initialize AdsGram
+        window.Adsgram = window.Adsgram || {};
+        window.Adsgram.init({ blockId: "14425" }); // փոխարինեք ձեր Block ID-ով
+
+        // Show ad
+        if (window.Adsgram && window.Adsgram.show) {
+            window.Adsgram.show().then((result) => {
+                if (result.done) {
+                    // Ad watched successfully
+                    task.status = 'started';
+                    task.claimAvailable = true;
+                    renderTasks();
+                    saveState();
+                    showNotification("Ad watched! You can claim your reward now!");
+                } else {
+                    // Ad was not watched completely
+                    showNotification("Please watch the ad completely to get the reward.");
+                }
+            }).catch((error) => {
+                console.error("AdsGram error:", error);
+                showNotification("Ad loading failed. Please try again later.");
+            });
+        } else {
+            // Fallback if AdsGram is not loaded
+            showNotification("Ad service is not available. Please try again later.");
+        }
+        return;
+    }
 
 
     // ✅ Premium Check Task
