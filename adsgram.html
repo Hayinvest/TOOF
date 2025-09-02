@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3QW0MCBKEC"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+</head>
+<body>
+    <style>
+        .task {
+  --adsgram-task-font-size: 16px; /* min 14px */
+  --adsgram-task-icon-size: 50px; /* min 30px */
+  --adsgram-task-icon-title-gap: 15px; /* min 5px max 40px */
+  --adsgram-task-button-width: 60px; /* min 40px */
+  --adsgram-task-icon-border-radius: 8px;
+
+  display: block;
+  width: 328px;
+  padding: 8px 16px 8px 8px;
+  border-radius: 16px;
+  background-color: #1d2733;
+  font-family: Roboto;
+  color: white;
+}
+
+.task__reward {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+}
+
+.task__button {
+  margin-left: 10px;
+  background-color: #50a8eb;
+  border-radius: 5px;
+  padding: 6px 12px;
+}
+
+.task__button_claim {
+  margin-left: 0;
+  background-color: #ee941c;
+}
+
+.task__button_done {
+  margin-left: 0;
+  background-color: #007539;
+}
+    </style>
+    <adsgram-task data-block-id='task-7308' data-debug='true' class='task'>
+  <p slot='reward' class='task__reward'>🪙 100</p>
+  <div slot='button' class='task__button'>go</div>
+  <div slot='claim' class='task__button task__button_claim'>claim</div>
+  <div slot='done' class='task__button task__button_done'>done</div>
+</adsgram-task>
+<script>
+    const task = document.querySelector(".task");
+task.addEventListener("reward", (event) => {
+  // event.detail contains your block id
+  alert(`Reward in block ${event.detail}`);
+});
+
+task.addEventListener("onError", (event) => {
+  alert(`Error during loading or render for block ${event.detail}`);
+});
+
+task.addEventListener("onBannerNotFound", (event) => {
+  alert(`Can't found banner for block ${event.detail}`);
+});
+
+task.addEventListener("onTooLongSession", (event) => {
+  alert('The session is too long. Please restart the app to get ads');
+});
+</script>
+</body>
+</html>
