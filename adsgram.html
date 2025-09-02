@@ -59,6 +59,7 @@
   <div slot='done' class='task__button task__button_done'>done</div>
 </adsgram-task>
 <script>
+    const AdController = window.Adsgram.init({ blockId: "14425" });
     const task = document.querySelector(".task");
 task.addEventListener("reward", (event) => {
   // event.detail contains your block id
