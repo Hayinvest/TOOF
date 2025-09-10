@@ -319,173 +319,230 @@ height: 100%;
   </div>
 
   <script>
-    const BACKEND_URL = "https://ton-check.onrender.com";
-    const RECEIVER = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm";
-    const AMOUNT = 100; // 0.0000001 TON
+   // Replace the script section in your HTML with this updated version
 
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: "https://hayinvest.github.io/TOOF/tonconnect-manifest.json",
-      buttonRootId: "connect-root",
-      uiPreferences: { theme: "SYSTEM" }
+const BACKEND_URL = "https://ton-check.onrender.com";
+const RECEIVER = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm";
+
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://haykoo707.github.io/test-payment/tonconnect-manifest.json",
+  buttonRootId: "connect-root",
+  uiPreferences: { theme: "SYSTEM" }
+});
+
+let spins = 0;
+let userScore = parseInt(localStorage.getItem("userScore")) || 0;
+
+const spinBtn = document.getElementById("spinBtn");
+const spinsEl = document.getElementById("spinsLeft");
+const scoreEl = document.getElementById("userScore");
+const resultEl = document.getElementById("result");
+const wheel = document.getElementById("wheel");
+const loadingEl = document.getElementById("loading");
+
+const rewards = [1000, 2000, 4000, 5000, 7500, 10000, 20000, 5000];
+
+// Build wheel segments
+function buildWheel() {
+  const segmentAngle = 360 / rewards.length;
+  rewards.forEach((reward, i) => {
+    const segment = document.createElement("div");
+    segment.className = "segment";
+    segment.style.transform = `rotate(${i * segmentAngle}deg) skewY(${90 - segmentAngle}deg)`;
+    segment.innerText = `+${reward}`;
+    wheel.appendChild(segment);
+  });
+}
+buildWheel();
+
+function updateUI() {
+  spinsEl.innerText = `Spins left: ${spins}`;
+  scoreEl.innerText = `Score: ${userScore}`;
+  spinBtn.disabled = spins <= 0;
+}
+updateUI();
+
+function showLoading(show = true) {
+  loadingEl.classList.toggle("show", show);
+}
+
+// Show result message
+function showResult(message, isSuccess = true) {
+  resultEl.innerText = message;
+  resultEl.style.color = isSuccess ? '#4ade80' : '#f87171';
+}
+
+// Handle wallet connection
+tonConnectUI.onStatusChange(wallet => {
+  document.querySelectorAll(".pay-package").forEach(btn => {
+    btn.disabled = !wallet;
+  });
+  updateUI();
+});
+
+// Verify payment with backend
+async function verifyPayment(senderAddress, txHash = null) {
+  try {
+    const payload = { senderAddress };
+    if (txHash) payload.txHash = txHash;
+
+    console.log("Verifying payment:", payload);
+
+    const response = await fetch(`${BACKEND_URL}/check-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    let spins = 2;
-    let userScore = parseInt(localStorage.getItem("userScore")) || 0;
-    let isSpinning = false;
-
-    const payBtn = document.getElementById("payBtn");
-    const spinBtn = document.getElementById("spinBtn");
-    const resultEl = document.getElementById("result");
-    const spinsEl = document.getElementById("spinsLeft");
-    const loadingEl = document.getElementById("loading");
-    const userScoreEl = document.getElementById("userScore");
-    const wheel = document.getElementById("wheel");
-
-    // Rewards with better distribution
-    const rewards = [500, 1000, 2000, 4000, 5000, 8000, 10000];
-    const weights = [2, 2, 2, 2, 2, 2, 2];
-    let totalWeight = weights.reduce((a,b)=>a+b,0);
-
-    function updateUserScore() {
-      userScoreEl.innerHTML = '<i class="fas fa-star"></i> UserScore: ' + userScore.toLocaleString();
-      localStorage.setItem("userScore", userScore);
-    }
-    updateUserScore();
-
-    function updateSpins() {
-      spinsEl.innerHTML = '<i class="fas fa-ticket-alt"></i> Spins left: ' + spins;
-      spinBtn.disabled = spins <= 0 || isSpinning;
-      payBtn.disabled = !tonConnectUI.account || isSpinning;
-    }
-    updateSpins();
-
-    function showLoading(show = true) {
-      loadingEl.classList.toggle('show', show);
-      payBtn.disabled = show || !tonConnectUI.account;
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`);
     }
 
-    function showResult(message, isSuccess = false) {
-      // Add appropriate icon based on message type
-      let icon = '';
-      if (isSuccess) {
-        icon = '<i class="fas fa-check-circle"></i> ';
-      } else if (message.includes('Processing') || message.includes('Verifying')) {
-        icon = '<i class="fas fa-search-dollar"></i> ';
-      } else if (message.includes('failed')) {
-        icon = '<i class="fas fa-exclamation-circle"></i> ';
-      } else if (message.includes('Congratulations')) {
-        icon = '<i class="fas fa-trophy"></i> ';
-      } else {
-        icon = '<i class="fas fa-spinner"></i> ';
+    const result = await response.json();
+    console.log("Payment verification result:", result);
+
+    return result;
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    throw new Error(`Payment verification failed: ${error.message}`);
+  }
+}
+
+// Payment packages
+document.querySelectorAll(".pay-package").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const spinsToAdd = parseInt(btn.dataset.spins);
+    const amount = btn.dataset.amount;
+    
+    // Disable button and show loading
+    btn.disabled = true;
+    showLoading(true);
+    showResult("💳 Initiating payment...", true);
+
+    try {
+      // Get current wallet
+      const wallet = tonConnectUI.wallet;
+      if (!wallet) {
+        throw new Error("Wallet not connected");
       }
+
+      const senderAddress = wallet.account.address;
+
+      // Create transaction
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 600, // 10 minutes
+        messages: [{
+          address: RECEIVER,
+          amount: amount.toString()
+        }]
+      };
+
+      showResult("📱 Please confirm transaction in your wallet...", true);
+
+      // Send transaction
+      const sendResult = await tonConnectUI.sendTransaction(tx);
+      if (!sendResult || !sendResult.boc) {
+        throw new Error("Transaction was not sent or confirmed");
+      }
+
+      console.log("Transaction sent:", sendResult);
+      showResult("⏳ Transaction sent! Verifying payment...", true);
+
+      // Wait for transaction to be processed and indexed
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      // Verify payment with backend
+      let verificationAttempts = 0;
+      const maxAttempts = 6; // 6 attempts over ~30 seconds
       
-      resultEl.innerHTML = icon + message;
-      resultEl.style.background = isSuccess ? 
-        'linear-gradient(45deg, rgba(76, 175, 80, 0.3), rgba(129, 199, 132, 0.3))' : 
-        'linear-gradient(45deg, rgba(244, 67, 54, 0.3), rgba(239, 154, 154, 0.3))';
-      setTimeout(()=>{
-        resultEl.style.background='rgba(255,255,255,0.15)';
-      }, 4000);
-    }
+      while (verificationAttempts < maxAttempts) {
+        try {
+          const verification = await verifyPayment(senderAddress);
+          
+          if (verification.success) {
+            // Payment verified successfully
+            spins += verification.spins;
+            updateUI();
+            showResult(`✅ Payment verified! You received ${verification.spins} spins!`, true);
+            console.log("Payment successful:", verification);
+            return; // Exit successfully
+          } else {
+            console.log(`Verification attempt ${verificationAttempts + 1}: Payment not yet confirmed`);
+          }
+        } catch (verifyError) {
+          console.log(`Verification attempt ${verificationAttempts + 1} failed:`, verifyError.message);
+        }
 
-    // Build wheel sectors with better styling
-    function drawWheel() {
-      wheel.innerHTML = ''; // Clear existing content
-      rewards.forEach((reward, i) => {
-        const sector = document.createElement("div");
-        sector.classList.add("sector");
-        sector.innerHTML = `<div style="transform: skewY(-38.57deg) rotate(-25deg);">${reward.toLocaleString()}</div>`;
-        wheel.appendChild(sector);
-      });
-      
-      // Add center icon
-      const centerIcon = document.createElement("i");
-      centerIcon.className = "fas fa-bullseye";
-      centerIcon.style.position = "absolute";
-      centerIcon.style.top = "50%";
-      centerIcon.style.left = "50%";
-      centerIcon.style.transform = "translate(-50%, -50%)";
-      centerIcon.style.color = "white";
-      centerIcon.style.fontSize = "24px";
-      centerIcon.style.zIndex = "6";
-      wheel.appendChild(centerIcon);
-    }
-    drawWheel();
-
-    function weightedRandom() {
-      let rnd = Math.random() * totalWeight;
-      for (let i = 0; i < rewards.length; i++) {
-        if (rnd < weights[i]) return i;
-        rnd -= weights[i];
+        verificationAttempts++;
+        
+        if (verificationAttempts < maxAttempts) {
+          showResult(`🔍 Verifying payment... (${verificationAttempts}/${maxAttempts})`, true);
+          await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds between attempts
+        }
       }
-      return 0;
+
+      // If we get here, verification failed after all attempts
+      throw new Error("Payment verification timed out. Please check your transaction and try again.");
+
+    } catch (err) {
+      console.error("Payment error:", err);
+      showResult(`❌ Payment failed: ${err.message}`, false);
+    } finally {
+      // Re-enable button and hide loading
+      btn.disabled = false;
+      showLoading(false);
     }
+  });
+});
 
-    // TON wallet handling
-    tonConnectUI.connectionRestored.then(()=>updateSpins());
-    tonConnectUI.onStatusChange(()=>updateSpins());
+// Spin animation
+spinBtn.addEventListener("click", () => {
+  if (spins <= 0) return;
+  
+  // Disable spin button during animation
+  spinBtn.disabled = true;
+  spins--;
+  updateUI();
 
-    payBtn.addEventListener("click", async () => {
-      showLoading(true);
-      showResult("Processing payment...");
-      try {
-        const tx = {
-          validUntil: Math.floor(Date.now()/1000)+600,
-          messages:[{address:RECEIVER, amount:AMOUNT.toString()}]
-        };
-        const sendRes = await tonConnectUI.sendTransaction(tx);
-        if (!sendRes) throw new Error("Transaction cancelled");
+  const segmentAngle = 360 / rewards.length;
+  const winningIndex = Math.floor(Math.random() * rewards.length);
+  const rotation = 360 * 5 + (360 - winningIndex * segmentAngle - segmentAngle/2);
 
-        showResult("Verifying payment...");
-        await new Promise(r=>setTimeout(r,3000));
+  wheel.style.transition = "transform 4s cubic-bezier(0.17,0.67,0.83,0.67)";
+  wheel.style.transform = `rotate(${rotation}deg)`;
 
-        const response = await fetch(`${BACKEND_URL}/check-payment`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ txHash: typeof sendRes==="string"?sendRes:null })
-        });
-        const data = await response.json();
-        if (data.success) {
-          spins++;
-          updateSpins();
-          showResult("Payment verified! 1 spin added!", true);
-        } else showResult("Payment verification failed");
-      } catch(err) {
-        showResult("Payment failed: "+err.message);
-      } finally { showLoading(false); }
-    });
+  setTimeout(() => {
+    const reward = rewards[winningIndex];
+    userScore += reward;
+    localStorage.setItem("userScore", userScore);
+    updateUI();
+    showResult(`🎉 You won +${reward} Score!`, true);
+    
+    // Re-enable spin button if there are spins left
+    spinBtn.disabled = spins <= 0;
+  }, 4200);
+});
 
-    // Enhanced spin logic
-    spinBtn.addEventListener("click", () => {
-      if (spins > 0 && !isSpinning) {
-        isSpinning = true;
-        spins--; 
-        updateSpins();
-        resultEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Spinning...';
-        
-        // Add spinning effects
-        wheel.classList.add('spinning');
-        
-        const sectorCount = rewards.length;
-        const index = weightedRandom();
-        const angleStep = 360 / sectorCount;
-        
-        // More realistic spin with random extra rotations
-        const extraSpins = Math.floor(Math.random() * 3) + 5; // 5-7 full rotations
-        const stopAngle = 360 * extraSpins + (360 - (index * angleStep + angleStep / 2));
-        
-        wheel.style.transform = `rotate(${stopAngle}deg)`;
-        
-        setTimeout(() => {
-          wheel.classList.remove('spinning');
-          const prize = rewards[index];
-          userScore += prize;
-          updateUserScore();
-          showResult(`Congratulations! You won: ${prize.toLocaleString()} XP!`, true);
-          isSpinning = false;
-          updateSpins();
-        }, 3000);
-      }
-    });
+// Add some utility functions for debugging
+window.debugFunctions = {
+  checkWallet: () => tonConnectUI.wallet,
+  checkSpins: () => spins,
+  addTestSpins: (amount = 1) => {
+    spins += amount;
+    updateUI();
+    console.log(`Added ${amount} test spins`);
+  },
+  resetScore: () => {
+    userScore = 0;
+    localStorage.setItem("userScore", "0");
+    updateUI();
+    console.log("Score reset to 0");
+  }
+};
   </script>
 </body>
+
 </html>
