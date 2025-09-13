@@ -90,34 +90,10 @@
     <i class="fa-solid fa-store"></i>
   </button>
 
-  <button class="premium-btn" onclick="openPremium()" aria-label="premium">
-    <i class="fa-solid fa-crown"></i>
-  </button>
+ 
 </div>
 
           
-<!-- Premium Popup -->
-<div id="premiumPopup" class="premium-popup">
-  <div class="premium-popup-content">
-    <span class="premium-close-btn" onclick="closePremium()">&times;</span>
-    <h2 class="premium-title">Premium Package</h2>
-    <p class="premium-text">Unlock premium features and enjoy the benefits:</p>
-    <ul class="premium-benefits">
-      <li>✔️ Faster farming speed</li>
-      <li>✔️ Bonus rewards</li>
-      <li>✔️ Exclusive skins & effects</li>
-    </ul>
-
-    <div class="premium-transaction-buttons">
-      <button class="premium-ton-btn" onclick="buyPremium(1)">
-        Pay 1      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
-      </button>
-      <button class="premium-ton-btn" onclick="buyPremium(2)">
-        Pay 2      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
-      </button>
-    </div>
-  </div>
-</div>
 
 
 <div id="shopPopup" class="popup" role="dialog" aria-modal="true" aria-label="Shop">
@@ -176,17 +152,6 @@
 </div>
 
 <script>
-function openPremium() {
-  document.getElementById('premiumPopup').style.display = 'flex';
-}
-
-function closePremium() {
-  document.getElementById('premiumPopup').style.display = 'none';
-}
-
-function buyPremium(amount) {
-  alert(`Processing ${amount} TON transaction...`);
-}
 
 
   /* ========= POPUP OPEN/CLOSE (ties into your existing shop button) ========= */
@@ -204,40 +169,9 @@ function buyPremium(amount) {
     document.body.style.overflow = '';
   }
 
-  /* ========= TON CONNECT (reuse your instance if present) ========= */
-  // You already load TonConnect UI and create `tonConnectUI` with manifest + #connect. :contentReference[oaicite:2]{index=2}
-  // Here we also mount a button into #connect-shop inside the popup.
-  async function ensureTonConnectForShop(){
-    // Reuse existing instance if available, otherwise create one (fallback)
-    if (!window.tonConnectUI) {
-      window.tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://hayinvest.github.io/TOOF/tonconnect-manifest.json',
-        buttonRootId: 'connect'
-      });
-    }
-    // mount a secondary button into popup
-    try {
-      tonConnectUI.uiOptions = { buttonRootId: 'connect-shop' };
-      await tonConnectUI.mountWalletButton(); // will place connect button into #connect-shop
-    } catch(e) {
-      // older versions may not have mountWalletButton; fallback – recreate:
-      try {
-        window.tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-          manifestUrl: 'https://hayinvest.github.io/TOOF/tonconnect-manifest.json',
-          buttonRootId: 'connect-shop'
-        });
-      } catch(_){}
-    }
 
-    // Status text
-    const statusEl = document.getElementById('walletStatus');
-    const setStatus = () => {
-      const wc = tonConnectUI.account;
-      statusEl.textContent = wc ? `Connected` : 'Not connected';
-    };
-    setStatus();
-    tonConnectUI.onStatusChange?.(setStatus);
-  }
+
+   
 
   /* ========= PACKS + PAYMENT ========= */
   const SHOP_ADDRESS = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm"; // your address from existing code. :contentReference[oaicite:3]{index=3}
@@ -246,70 +180,55 @@ function buyPremium(amount) {
   const nt = (ton) => (BigInt(Math.round(ton * 1e9))).toString();
 
   const PACKS = {
-    p1: { label: "5,000★",   add: 5000,          ton: 0.1 },
+    p1: { label: "5,000★",   add: 5000,          ton: 0.0001 },
     p2: { label: "30,000★",  add: 30500,         ton: 0.5 }, // +500 bonus
     p3: { label: "65,000★",  add: 66000,         ton: 1.0 }, // +1000 bonus
     p4: { label: "140,000★", add: 142000,        ton: 2.0 }  // +2000 bonus
   };
 
-  async function buyPack(id){
-    const pack = PACKS[id];
-    if(!pack){ return; }
+ async function buyPack(id) {
+  const pack = PACKS[id];
+  if (!pack) return;
 
-    // Require wallet
-    if (!tonConnectUI?.account) {
-      alert("Connect TON wallet first.");
-      return;
-    }
-
-    // Build transaction
-    const tx = {
-      validUntil: Math.round(Date.now()/1000) + 300, // 5min
-      messages: [
-        {
-          address: SHOP_ADDRESS,
-          amount: nt(pack.ton) // nanotons
-        }
-      ]
-    };
-
-    try {
-      await tonConnectUI.sendTransaction(tx); // sends via connected wallet. :contentReference[oaicite:4]{index=4}
-
-      // On success: add stars to localStorage score, update UI (reuse your helpers if exist)
-      const hasUpdateScore = typeof updateScore === 'function';
-      const hasAddToHistory = typeof addToHistory === 'function';
-
-      let current = parseInt(localStorage.getItem('userScore') || '0', 10);
-      current += pack.add;
-      localStorage.setItem('userScore', String(current));
-
-      if (hasAddToHistory) addToHistory(pack.add, `Purchased ${pack.label}`);
-      if (hasUpdateScore) {
-        // your updateScore() also refreshes medals and sends to server, per your file. :contentReference[oaicite:5]{index=5}
-        // Make sure a global userScore mirrors localStorage:
-        if (typeof window.userScore === 'number') window.userScore = current;
-        updateScore();
-      } else {
-        // minimal UI fallback if helper not present
-        const el = document.getElementById('userScore');
-        if (el) el.textContent = current;
-        const disp = document.getElementById('userScoreDisplay');
-        if (disp) disp.innerHTML = current.toLocaleString() + ' <i class="fas fa-star"></i>';
-      }
-
-      // small toast (reuse your showNotification if present)
-      if (typeof showNotification === 'function') {
-        showNotification(`+${pack.add} <i class="fas fa-star"></i> added!`);
-      } else {
-        alert(`Success! Added ${pack.add} ★`);
-      }
-
-    } catch (e) {
-      console.error('TON payment failed:', e);
-      alert('Payment was cancelled or failed.');
-    }
+  if (!tonConnectUI?.account) {
+    alert("Connect TON wallet first.");
+    return;
   }
+
+  const tx = {
+    validUntil: Math.round(Date.now() / 1000) + 300,
+    messages: [{ address: SHOP_ADDRESS, amount: nt(pack.ton) }]
+  };
+
+  try {
+    const result = await tonConnectUI.sendTransaction(tx);
+
+    // result-ը սովորաբար տալիս է transaction hash
+    const txHash = result.boc; // կլնի նաև result.transaction.hash կախված provider-ից
+    const userWallet = tonConnectUI.account.address;
+
+    // ուղարկում ենք backend-ին ստուգելու
+    const res = await fetch("https://ton-backend-w5qv.onrender.com/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userWallet, txHash, packId: id })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("userScore", data.newScore);
+      updateScore();
+      alert(`+${pack.add} ★ added!`);
+    } else {
+      alert("Payment not verified yet. Try again in a few seconds.");
+    }
+
+  } catch (e) {
+    console.error("Payment error:", e);
+    alert("Payment failed or cancelled.");
+  }
+}
+
 </script>
 
 
@@ -519,9 +438,9 @@ profileDiv.innerHTML = `
 </button>
 
             
- <button class="btn spinbtn" onclick="window.location.href='spin.html'">
+ <button class="btn spinbtn" onclick="window.location.href=''">
     <img src="https://raw.githubusercontent.com/Hayinvest/TOOF/refs/heads/main/Video%20Game.webp" alt="play" class="spin-img">
-    <span>Spin</span>
+    <span>Games</span>
 </button>
 
 
