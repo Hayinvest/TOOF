@@ -169,9 +169,6 @@
     document.body.style.overflow = '';
   }
 
-
-
-   
 const SHOP_ADDRESS = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm";
 const nt = ton => BigInt(Math.round(ton * 1e9)).toString();
 
@@ -192,22 +189,24 @@ async function buyPack(id) {
   }
 
   const tx = {
-    validUntil: Math.round(Date.now() / 1000) + 300,
+    validUntil: Math.round(Date.now() / 1000) + 600, // 10 min
     messages: [{ address: SHOP_ADDRESS, amount: nt(pack.ton) }]
   };
 
   try {
     const result = await tonConnectUI.sendTransaction(tx);
-    const txHash = result?.transaction?.id?.hash || null;
 
+    // Take correct transaction hash
+    const txHash = result?.transaction?.id?.hash || null;
     if (!txHash) {
       alert("Payment failed or cancelled");
       return;
     }
 
-    // small delay before checking backend (optional, give blockchain time)
+    // Optional: small delay for blockchain confirmation
     await new Promise(r => setTimeout(r, 3000));
 
+    // Send to backend to confirm
     const check = await fetch("https://ton-backend-w5qv.onrender.com/checkTx", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -219,11 +218,14 @@ async function buyPack(id) {
     }).then(r => r.json());
 
     if (check.success) {
+      // Update userScore dynamically
       let current = parseInt(localStorage.getItem("userScore") || "0", 10);
       current += pack.add;
       localStorage.setItem("userScore", String(current));
+
       const el = document.getElementById("userScore");
       if(el) el.textContent = current;
+
       alert(`✅ ${pack.add} stars added!`);
     } else {
       alert("❌ Payment not confirmed yet: " + check.error);
@@ -234,8 +236,8 @@ async function buyPack(id) {
     alert("Payment failed or cancelled");
   }
 }
-
 </script>
+
 
 
 <div id="welcomePopup" class="popupbonus">
