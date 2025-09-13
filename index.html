@@ -197,37 +197,44 @@
 
   const tx = {
     validUntil: Math.round(Date.now() / 1000) + 300,
-    messages: [{ address: SHOP_ADDRESS, amount: nt(pack.ton) }]
+    messages: [
+      { address: SHOP_ADDRESS, amount: nt(pack.ton) }
+    ]
   };
 
   try {
     const result = await tonConnectUI.sendTransaction(tx);
 
-    // result-ը սովորաբար տալիս է transaction hash
-    const txHash = result.boc; // կլնի նաև result.transaction.hash կախված provider-ից
-    const userWallet = tonConnectUI.account.address;
+    // result-ում գա txHash
+    const txHash = result?.boc || null;
 
-    // ուղարկում ենք backend-ին ստուգելու
-    const res = await fetch("https://ton-backend-w5qv.onrender.com/", {
+    // Backend–ին ուղարկում ենք ստուգման համար
+    const check = await fetch("https://ton-backend-w5qv.onrender.com/checkTx", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userWallet, txHash, packId: id })
-    });
-    const data = await res.json();
+      body: JSON.stringify({
+        txHash,
+        userAddress: tonConnectUI.account.address,
+        amount: nt(pack.ton)
+      })
+    }).then(r => r.json());
 
-    if (data.success) {
-      localStorage.setItem("userScore", data.newScore);
-      updateScore();
-      alert(`+${pack.add} ★ added!`);
+    if (check.success) {
+      // Այստեղ միայն ավելացվում է userScore
+      let current = parseInt(localStorage.getItem("userScore") || "0", 10);
+      current += pack.add;
+      localStorage.setItem("userScore", String(current));
+      alert(`✅ ${pack.add} stars added!`);
     } else {
-      alert("Payment not verified yet. Try again in a few seconds.");
+      alert("❌ Payment not confirmed yet: " + check.error);
     }
 
-  } catch (e) {
-    console.error("Payment error:", e);
-    alert("Payment failed or cancelled.");
+  } catch (err) {
+    console.error("Payment failed:", err);
+    alert("Payment failed or cancelled");
   }
 }
+
 
 </script>
 
