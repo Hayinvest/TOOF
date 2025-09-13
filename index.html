@@ -172,21 +172,17 @@
 
 
    
+const SHOP_ADDRESS = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm";
+const nt = ton => BigInt(Math.round(ton * 1e9)).toString();
 
-  /* ========= PACKS + PAYMENT ========= */
-  const SHOP_ADDRESS = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm"; // your address from existing code. :contentReference[oaicite:3]{index=3}
+const PACKS = {
+  p1: { label: "5,000★", add: 5000, ton: 0.0001 },
+  p2: { label: "30,000★", add: 30500, ton: 0.5 },
+  p3: { label: "65,000★", add: 66000, ton: 1.0 },
+  p4: { label: "140,000★", add: 142000, ton: 2.0 }
+};
 
-  // nanotons helper
-  const nt = (ton) => (BigInt(Math.round(ton * 1e9))).toString();
-
-  const PACKS = {
-    p1: { label: "5,000★",   add: 5000,          ton: 0.0001 },
-    p2: { label: "30,000★",  add: 30500,         ton: 0.5 }, // +500 bonus
-    p3: { label: "65,000★",  add: 66000,         ton: 1.0 }, // +1000 bonus
-    p4: { label: "140,000★", add: 142000,        ton: 2.0 }  // +2000 bonus
-  };
-
- async function buyPack(id) {
+async function buyPack(id) {
   const pack = PACKS[id];
   if (!pack) return;
 
@@ -197,18 +193,21 @@
 
   const tx = {
     validUntil: Math.round(Date.now() / 1000) + 300,
-    messages: [
-      { address: SHOP_ADDRESS, amount: nt(pack.ton) }
-    ]
+    messages: [{ address: SHOP_ADDRESS, amount: nt(pack.ton) }]
   };
 
   try {
     const result = await tonConnectUI.sendTransaction(tx);
+    const txHash = result?.transaction?.id?.hash || null;
 
-    // result-ում գա txHash
-    const txHash = result?.boc || null;
+    if (!txHash) {
+      alert("Payment failed or cancelled");
+      return;
+    }
 
-    // Backend–ին ուղարկում ենք ստուգման համար
+    // small delay before checking backend (optional, give blockchain time)
+    await new Promise(r => setTimeout(r, 3000));
+
     const check = await fetch("https://ton-backend-w5qv.onrender.com/checkTx", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -220,10 +219,11 @@
     }).then(r => r.json());
 
     if (check.success) {
-      // Այստեղ միայն ավելացվում է userScore
       let current = parseInt(localStorage.getItem("userScore") || "0", 10);
       current += pack.add;
       localStorage.setItem("userScore", String(current));
+      const el = document.getElementById("userScore");
+      if(el) el.textContent = current;
       alert(`✅ ${pack.add} stars added!`);
     } else {
       alert("❌ Payment not confirmed yet: " + check.error);
@@ -234,7 +234,6 @@
     alert("Payment failed or cancelled");
   }
 }
-
 
 </script>
 
