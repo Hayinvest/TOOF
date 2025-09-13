@@ -49,22 +49,26 @@ color: #8A2BE2;
       padding: 10px;
     }
 
-    .back-btn {
-      background: #8225d8;
+      .back-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: #7c20ce;
       color: #ffffff;
       border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
       font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      text-decoration: none;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
       transition: 0.3s;
+      z-index: 10;
     }
 
     .back-btn:hover {
       background: #eee;
     }
+ 
   </style>
 </head>
 <body>
@@ -74,7 +78,7 @@ color: #8A2BE2;
     <header>
       <!-- 🔙 Back Button -->
       <a href="index.html">
-        <button class="back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
       </a>
     </header>
 
