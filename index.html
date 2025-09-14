@@ -362,16 +362,19 @@ async function buyPack(id) {
         }
     }
 
-    // ❌ Block everything except ton-mainnet
-    if (!tonConnectUI.account.chain || tonConnectUI.account.chain !== "ton-mainnet") {
-        Swal.fire({
-            icon: "error",
-            title: "Mainnet Only",
-            text: "Payments are allowed only on TON Mainnet. Please switch your wallet.",
-            confirmButtonText: "OK"
-        });
-        return;
-    }
+// ❌ Block everything except TON mainnet (-239)
+console.log("CHAIN = ", tonConnectUI.account.chain);
+
+if (tonConnectUI.account.chain !== "-239") {
+    Swal.fire({
+        icon: "error",
+        title: "Mainnet Only",
+        text: `Payments are allowed only on TON Mainnet. Current chain: ${tonConnectUI.account.chain}`,
+        confirmButtonText: "OK"
+    });
+    return;
+}
+
 
     console.log('Buying pack:', pack);
 
