@@ -267,7 +267,7 @@ window.addEventListener("load", () => {
 // Մեկ TonConnect UI բոլոր տեղերի համար
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://hayinvest.github.io/TOOF/tonconnect-manifest.json',
-    buttonRootId: 'connect' // Հիմնական button profile tab-ում
+    buttonRootId: 'connect'
 });
 
 // Shop constants
@@ -281,7 +281,7 @@ const PACKS = {
     p4: { label: "140,000⭐", add: 142000, ton: 2.0 }
 };
 
-// Wallet status-ի թարմացում
+// Wallet status
 function updateWalletStatus() {
     const profileWalletStatus = document.getElementById('walletStatus');
     const shopWalletStatus = document.getElementById('walletStatus');
@@ -289,25 +289,25 @@ function updateWalletStatus() {
     if (tonConnectUI?.account) {
         const addr = tonConnectUI.account.address;
         const shortAddr = `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-        const statusText = `Wallet Connected: ${shortAddr}`;
+        const chain = tonConnectUI.account.chain || "unknown";
+
+        // ✅ Show chain info
+        const statusText = `Wallet Connected: ${shortAddr} (${chain})`;
 
         if (profileWalletStatus) {
             profileWalletStatus.textContent = statusText;
-            profileWalletStatus.style.color = '#4CAF50';
+            profileWalletStatus.style.color = chain === "ton-mainnet" ? '#4CAF50' : '#f44336';
         }
-
         if (shopWalletStatus) {
             shopWalletStatus.textContent = statusText;
-            shopWalletStatus.style.color = '#4CAF50';
+            shopWalletStatus.style.color = chain === "ton-mainnet" ? '#4CAF50' : '#f44336';
         }
     } else {
         const statusText = 'Not connected';
-
         if (profileWalletStatus) {
             profileWalletStatus.textContent = statusText;
             profileWalletStatus.style.color = '#aaa';
         }
-
         if (shopWalletStatus) {
             shopWalletStatus.textContent = statusText;
             shopWalletStatus.style.color = '#aaa';
@@ -315,25 +315,18 @@ function updateWalletStatus() {
     }
 }
 
-// Shop popup բացելիս connect button ստեղծել
+// Shop popup
 function ensureTonConnectForShop() {
     const shopConnectDiv = document.getElementById('connect-shop');
     if (shopConnectDiv && !shopConnectDiv.hasChildNodes()) {
-        if (tonConnectUI?.account) {
-            shopConnectDiv.innerHTML = ``;
-        } else {
-            shopConnectDiv.innerHTML = ``;
-        }
+        shopConnectDiv.innerHTML = ``;
     }
     updateWalletStatus();
 }
 
-// Shop-ում wallet connect անելու ֆունկցիա
 async function connectWalletForShop() {
     try {
-        if (tonConnectUI?.account) {
-            return;
-        }
+        if (tonConnectUI?.account) return;
         await tonConnectUI.openModal();
     } catch (error) {
         console.error('Failed to connect wallet:', error);
@@ -341,45 +334,16 @@ async function connectWalletForShop() {
     }
 }
 
-// TonConnect status change listener
 tonConnectUI.onStatusChange((wallet) => {
     console.log('Wallet status changed:', wallet);
     updateWalletStatus();
-
     const shopPopup = document.getElementById('shopPopup');
     if (shopPopup && shopPopup.classList.contains('show')) {
         ensureTonConnectForShop();
     }
 });
 
-// Test transaction ֆունկցիա
-async function transaction() {
-    if (!tonConnectUI?.account) {
-        alert("Please connect wallet first");
-        return;
-    }
-
-    const transaction = {
-        validUntil: Math.round(Date.now() / 1000) + 60,
-        messages: [
-            {
-                address: "UQBfrU75WGhBLnRpBs1ImWE5sPdxKsFMBgogpD578JxXyDbK",
-                amount: "1000000"
-            }
-        ]
-    };
-
-    try {
-        const result = await tonConnectUI.sendTransaction(transaction);
-        console.log("Test transaction sent successfully!", result);
-        alert("Test transaction sent!");
-    } catch (e) {
-        console.error("Failed to send test transaction:", e);
-        alert("Test transaction failed: " + e.message);
-    }
-}
-
-// ⭐ Shop գնումներ առանց backend verify + Testnet Block
+// ⭐ Shop գնումներ (Միայն mainnet)
 async function buyPack(id) {
     const pack = PACKS[id];
     if (!pack) {
@@ -398,12 +362,12 @@ async function buyPack(id) {
         }
     }
 
-    // ❌ Block testnet payments
-    if (tonConnectUI.account.chain && tonConnectUI.account.chain.includes("testnet")) {
+    // ❌ Block everything except ton-mainnet
+    if (!tonConnectUI.account.chain || tonConnectUI.account.chain !== "ton-mainnet") {
         Swal.fire({
             icon: "error",
-            title: "Testnet Not Supported",
-            text: "Payments from TON testnet are not accepted. Please switch to mainnet.",
+            title: "Mainnet Only",
+            text: "Payments are allowed only on TON Mainnet. Please switch your wallet.",
             confirmButtonText: "OK"
         });
         return;
@@ -434,14 +398,13 @@ async function buyPack(id) {
 
         const result = await tonConnectUI.sendTransaction(transaction);
         console.log('Transaction result:', result);
-
         loadingAlert.close();
 
         if (!result || !result.boc) {
             throw new Error("Transaction was cancelled");
         }
 
-        // ✅ Credit stars only for mainnet
+        // ✅ Credit stars only if mainnet
         let currentScore = parseInt(localStorage.getItem("userScore") || "0", 10);
         currentScore += pack.add;
         localStorage.setItem("userScore", String(currentScore));
@@ -452,7 +415,6 @@ async function buyPack(id) {
 
         const scoreElement = document.getElementById("userScore");
         if (scoreElement) scoreElement.textContent = currentScore;
-
         if (typeof updateScore === "function") updateScore();
 
         Swal.fire({
@@ -485,7 +447,7 @@ async function buyPack(id) {
     }
 }
 
-// Shop popup functions
+// Popup helpers
 function openShopPopup() {
     const el = document.getElementById('shopPopup');
     if (el) {
@@ -496,7 +458,6 @@ function openShopPopup() {
         }, 100);
     }
 }
-
 function closeShopPopup() {
     const el = document.getElementById('shopPopup');
     if (el) {
@@ -504,17 +465,15 @@ function closeShopPopup() {
         document.body.style.overflow = '';
     }
 }
-
 function toggleMenu() {
     openShopPopup();
 }
 
-// Initialize
+// Init
 document.addEventListener('DOMContentLoaded', () => {
     updateWalletStatus();
     console.log('Single TonConnect UI initialized');
 });
-
 </script>
 
  <script>
