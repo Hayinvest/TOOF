@@ -281,7 +281,7 @@ const PACKS = {
     p4: { label: "140,000⭐", add: 142000, ton: 2.0 }
 };
 
-// Wallet status
+// Wallet status-ի թարմացում
 function updateWalletStatus() {
     const profileWalletStatus = document.getElementById('walletStatus');
     const shopWalletStatus = document.getElementById('walletStatus');
@@ -289,18 +289,31 @@ function updateWalletStatus() {
     if (tonConnectUI?.account) {
         const addr = tonConnectUI.account.address;
         const shortAddr = `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-        const chain = tonConnectUI.account.chain || "unknown";
+        const chain = tonConnectUI.account.chain;
 
-        // ✅ Show chain info
-        const statusText = `Wallet Connected: ${shortAddr} (${chain})`;
+        let statusText = `Wallet Connected: ${shortAddr}`;
+        let color = "#f44336"; // default red
+
+        if (chain === "-239") {
+            // ✅ mainnet
+            statusText += " (Mainnet)";
+            color = "#4CAF50"; // green
+        } else if (chain === "-3") {
+            // ❌ testnet
+            statusText += " (Testnet)";
+            color = "#f44336"; // red
+        } else {
+            statusText += ` (Unknown: ${chain})`;
+            color = "#f44336";
+        }
 
         if (profileWalletStatus) {
             profileWalletStatus.textContent = statusText;
-            profileWalletStatus.style.color = chain === "ton-mainnet" ? '#4CAF50' : '#f44336';
+            profileWalletStatus.style.color = color;
         }
         if (shopWalletStatus) {
             shopWalletStatus.textContent = statusText;
-            shopWalletStatus.style.color = chain === "ton-mainnet" ? '#4CAF50' : '#f44336';
+            shopWalletStatus.style.color = color;
         }
     } else {
         const statusText = 'Not connected';
@@ -362,19 +375,16 @@ async function buyPack(id) {
         }
     }
 
-// ❌ Block everything except TON mainnet (-239)
-console.log("CHAIN = ", tonConnectUI.account.chain);
-
-if (tonConnectUI.account.chain !== "-239") {
-    Swal.fire({
-        icon: "error",
-        title: "Mainnet Only",
-        text: `Payments are allowed only on TON Mainnet. Current chain: ${tonConnectUI.account.chain}`,
-        confirmButtonText: "OK"
-    });
-    return;
-}
-
+    // ❌ Block everything except mainnet (-239)
+    if (tonConnectUI.account.chain !== "-239") {
+        Swal.fire({
+            icon: "error",
+            title: "Mainnet Only",
+            text: `Payments are allowed only on TON Mainnet. Current chain: ${tonConnectUI.account.chain}`,
+            confirmButtonText: "OK"
+        });
+        return;
+    }
 
     console.log('Buying pack:', pack);
 
@@ -407,7 +417,7 @@ if (tonConnectUI.account.chain !== "-239") {
             throw new Error("Transaction was cancelled");
         }
 
-        // ✅ Credit stars only if mainnet
+        // ✅ Credit stars (only mainnet)
         let currentScore = parseInt(localStorage.getItem("userScore") || "0", 10);
         currentScore += pack.add;
         localStorage.setItem("userScore", String(currentScore));
@@ -478,6 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Single TonConnect UI initialized');
 });
 </script>
+
 
  <script>
   window.Telegram.WebApp.ready();
@@ -909,17 +920,6 @@ function closeHistoryPopup() {
 document.getElementById('closeHistoryBtn').addEventListener('click', closeHistoryPopup);
 
 const defaultTasks = [
-  {
-    id: 12,
-    title: 'Watch an Ads',
-    reward: 500,
-    status: 'pending',
-    claimAvailable: false,
-    timerId: null,
-    icon: '<i class="fas fa-play-circle" style="color: #ffffffef; font-size: 1.4em;"></i>',
-    type: 'ad'
-},
-
 {
     id: 1,
     title: 'Join Hayinvest Channel',
