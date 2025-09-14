@@ -22,7 +22,7 @@
   gtag('config', 'G-3QW0MCBKEC');
 </script>
 
-<title>HyperVerse</title>
+<title>TOOF</title>
 
 <script>
   const tg = window.Telegram.WebApp;
@@ -283,34 +283,31 @@ const PACKS = {
 
 // Wallet status-ի թարմացում
 function updateWalletStatus() {
-    // Profile tab-ում
     const profileWalletStatus = document.getElementById('walletStatus');
-    
-    // Shop-ում
     const shopWalletStatus = document.getElementById('walletStatus');
-    
+
     if (tonConnectUI?.account) {
         const addr = tonConnectUI.account.address;
         const shortAddr = `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-        const statusText = `Connected: ${shortAddr}`;
-        
+        const statusText = `Wallet Connected: ${shortAddr}`;
+
         if (profileWalletStatus) {
             profileWalletStatus.textContent = statusText;
             profileWalletStatus.style.color = '#4CAF50';
         }
-        
+
         if (shopWalletStatus) {
             shopWalletStatus.textContent = statusText;
             shopWalletStatus.style.color = '#4CAF50';
         }
     } else {
         const statusText = 'Not connected';
-        
+
         if (profileWalletStatus) {
             profileWalletStatus.textContent = statusText;
             profileWalletStatus.style.color = '#aaa';
         }
-        
+
         if (shopWalletStatus) {
             shopWalletStatus.textContent = statusText;
             shopWalletStatus.style.color = '#aaa';
@@ -322,24 +319,10 @@ function updateWalletStatus() {
 function ensureTonConnectForShop() {
     const shopConnectDiv = document.getElementById('connect-shop');
     if (shopConnectDiv && !shopConnectDiv.hasChildNodes()) {
-        // Ստեղծել connect button shop-ի համար
         if (tonConnectUI?.account) {
-            // Եթե արդեն connected է, ցույց տալ status
-            shopConnectDiv.innerHTML = `
-                <div style="
-                    padding: 10px; 
-                    background: #1a1a1a; 
-                    border-radius: 8px; 
-                    border: 1px solid #333;
-                    text-align: center;
-                    color: #4CAF50;
-                    font-size: 14px;
-                ">
-                    <i class="fas fa-check-circle"></i> Wallet Connected
-                </div>
-            `;
+            shopConnectDiv.innerHTML = ``;
         } else {
-          
+            shopConnectDiv.innerHTML = ``;
         }
     }
     updateWalletStatus();
@@ -349,13 +332,9 @@ function ensureTonConnectForShop() {
 async function connectWalletForShop() {
     try {
         if (tonConnectUI?.account) {
-            // Արդեն connected է
             return;
         }
-        
-        // Connect անել
         await tonConnectUI.openModal();
-        
     } catch (error) {
         console.error('Failed to connect wallet:', error);
         alert('Failed to connect wallet. Please try again.');
@@ -366,15 +345,14 @@ async function connectWalletForShop() {
 tonConnectUI.onStatusChange((wallet) => {
     console.log('Wallet status changed:', wallet);
     updateWalletStatus();
-    
-    // Shop popup բաց է եթե, թարմացնել
+
     const shopPopup = document.getElementById('shopPopup');
     if (shopPopup && shopPopup.classList.contains('show')) {
         ensureTonConnectForShop();
     }
 });
 
-// Test transaction ֆունկցիա (ձեր առկային)
+// Test transaction ֆունկցիա
 async function transaction() {
     if (!tonConnectUI?.account) {
         alert("Please connect wallet first");
@@ -401,7 +379,7 @@ async function transaction() {
     }
 }
 
-// Shop գնումներ
+// ⭐ Shop գնումներ առանց backend verify
 async function buyPack(id) {
     const pack = PACKS[id];
     if (!pack) {
@@ -409,14 +387,11 @@ async function buyPack(id) {
         return;
     }
 
-    // Ստուգել wallet connection
     if (!tonConnectUI?.account) {
         alert("Please connect your TON wallet first.");
-        
-        // Բացել connect modal
         try {
             await tonConnectUI.openModal();
-            return; // User պետք է կրկին սեղմի buy button
+            return;
         } catch (error) {
             console.error('Failed to open wallet modal:', error);
             return;
@@ -426,7 +401,7 @@ async function buyPack(id) {
     console.log('Buying pack:', pack);
 
     const transaction = {
-        validUntil: Math.round(Date.now() / 1000) + 600, // 10 minutes
+        validUntil: Math.round(Date.now() / 1000) + 600,
         messages: [
             {
                 address: SHOP_ADDRESS,
@@ -436,9 +411,6 @@ async function buyPack(id) {
     };
 
     try {
-        console.log('Sending transaction:', transaction);
-        
-        // Loading alert
         const loadingAlert = Swal.fire({
             title: 'Processing Payment...',
             text: 'Please confirm the transaction in your wallet',
@@ -455,81 +427,37 @@ async function buyPack(id) {
         loadingAlert.close();
 
         if (!result || !result.boc) {
-            throw new Error('Transaction was cancelled');
+            throw new Error("Transaction was cancelled");
         }
 
-        // Confirmation loading
-        const confirmAlert = Swal.fire({
-            title: 'Confirming Payment...',
-            text: 'Waiting for blockchain confirmation',
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        // ✅ Ուղղակի credit անենք stars-ները
+        let currentScore = parseInt(localStorage.getItem("userScore") || "0", 10);
+        currentScore += pack.add;
+        localStorage.setItem("userScore", String(currentScore));
 
-        // Wait for blockchain
-        await new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
-
-        // Backend verification
-        const checkResponse = await fetch("https://ton-backend-w5qv.onrender.com/checkTx", {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                txHash: result.boc,
-                userAddress: tonConnectUI.account.address,
-                amount: nt(pack.ton),
-                packId: id
-            })
-        });
-
-        confirmAlert.close();
-
-        const checkData = await checkResponse.json();
-        console.log('Backend response:', checkData);
-
-        if (checkData.success) {
-            // Success - update score
-            let currentScore = parseInt(localStorage.getItem("userScore") || "0", 10);
-            currentScore += pack.add;
-            localStorage.setItem("userScore", String(currentScore));
-
-            // Update UI
-            if (typeof userScore !== 'undefined') {
-                userScore = currentScore;
-            }
-            
-            const scoreElement = document.getElementById("userScore");
-            if (scoreElement) {
-                scoreElement.textContent = currentScore;
-            }
-
-            if (typeof updateScore === 'function') {
-                updateScore();
-            }
-
-            // Success notification
-            Swal.fire({
-                icon: 'success',
-                title: 'Payment Successful!',
-                html: `You received <strong>${pack.add} stars</strong>!<br>
-                       Total: <strong>${currentScore} ⭐</strong>`,
-                confirmButtonText: 'Great!',
-                timer: 4000
-            });
-
-            closeShopPopup();
-
-        } else {
-            throw new Error(checkData.error || 'Payment verification failed');
+        if (typeof userScore !== "undefined") {
+            userScore = currentScore;
         }
+
+        const scoreElement = document.getElementById("userScore");
+        if (scoreElement) scoreElement.textContent = currentScore;
+
+        if (typeof updateScore === "function") updateScore();
+
+        Swal.fire({
+            icon: "success",
+            title: "Payment Successful!",
+            html: `You received <strong>${pack.add} stars</strong>!<br>
+                   Total: <strong>${currentScore} ⭐</strong>`,
+            confirmButtonText: "Great!",
+            timer: 4000
+        });
+
+        closeShopPopup();
 
     } catch (error) {
         console.error("Transaction failed:", error);
-        
+
         let errorMessage = "Transaction failed";
         if (error.message.includes('cancelled') || error.message.includes('rejected')) {
             errorMessage = "Transaction was cancelled by user";
@@ -538,10 +466,10 @@ async function buyPack(id) {
         }
 
         Swal.fire({
-            icon: 'error',
-            title: 'Transaction Failed',
+            icon: "error",
+            title: "Transaction Failed",
             text: errorMessage,
-            confirmButtonText: 'OK'
+            confirmButtonText: "OK"
         });
     }
 }
@@ -553,7 +481,7 @@ function openShopPopup() {
         el.classList.add('show');
         document.body.style.overflow = 'hidden';
         setTimeout(() => {
-            ensureTonConnectForShop(); // Delay որ DOM-ը render լինի
+            ensureTonConnectForShop();
         }, 100);
     }
 }
@@ -566,8 +494,8 @@ function closeShopPopup() {
     }
 }
 
-function toggleMenu() { 
-    openShopPopup(); 
+function toggleMenu() {
+    openShopPopup();
 }
 
 // Initialize
@@ -575,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateWalletStatus();
     console.log('Single TonConnect UI initialized');
 });
+
 </script>
 
  <script>
