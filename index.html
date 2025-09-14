@@ -379,7 +379,7 @@ async function transaction() {
     }
 }
 
-// ⭐ Shop գնումներ առանց backend verify
+// ⭐ Shop գնումներ առանց backend verify + Testnet Block
 async function buyPack(id) {
     const pack = PACKS[id];
     if (!pack) {
@@ -396,6 +396,17 @@ async function buyPack(id) {
             console.error('Failed to open wallet modal:', error);
             return;
         }
+    }
+
+    // ❌ Block testnet payments
+    if (tonConnectUI.account.chain && tonConnectUI.account.chain.includes("testnet")) {
+        Swal.fire({
+            icon: "error",
+            title: "Testnet Not Supported",
+            text: "Payments from TON testnet are not accepted. Please switch to mainnet.",
+            confirmButtonText: "OK"
+        });
+        return;
     }
 
     console.log('Buying pack:', pack);
@@ -430,7 +441,7 @@ async function buyPack(id) {
             throw new Error("Transaction was cancelled");
         }
 
-        // ✅ Ուղղակի credit անենք stars-ները
+        // ✅ Credit stars only for mainnet
         let currentScore = parseInt(localStorage.getItem("userScore") || "0", 10);
         currentScore += pack.add;
         localStorage.setItem("userScore", String(currentScore));
