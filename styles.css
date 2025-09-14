@@ -347,7 +347,7 @@ background: #8A2BE2;
     
 
 .loadingh5 {
-  color: rgb(100, 100, 100);
+  color: rgb(184, 184, 184);
   position: absolute;
   top: 96%;
   left: 50%;
@@ -1478,7 +1478,11 @@ input[type=number] {
   }
   #shopPopup .close-btn {
     background: #7c20ce; border: 2px solid #ffffff; color:#fff;
-    padding: 3px 8px; border-radius: 14px;
+    padding: 3px 7px; border-radius: 10px;
+    position: fixed;
+    top: 1%;
+    right: 1%;
+    font-size: 20px;
   }
   #shopPopup .body {
     flex: 1; overflow: auto; padding: 10px 2px 120px;
@@ -1513,7 +1517,7 @@ input[type=number] {
   #shopPopup .wallet .row {
     display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
-  #shopPopup .note { color:#9b9b9b; font-size: 12px; margin-top: 8px; }
+  #shopPopup .note { color:#ffffff; font-size: 12px; margin-top: 8px; }
   /* slide-in anim */
   #shopPopup.show { display: block; animation: shopFade .18s ease-out both; }
   @keyframes shopFade { from{opacity:0} to{opacity:1} }
@@ -1552,4 +1556,19 @@ input[type=number] {
     display: block !important;
     opacity: 1;
     visibility: visible;
+}
+/* From Uiverse.io by mrhyddenn */ 
+.loader {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 5px solid rgb(184, 184, 184);
+  border-top-color: transparent;
+  animation: rot1 1.2s linear infinite;
+}
+
+@keyframes rot1 {
+  to {
+    transform: rotate(360deg);
+  }
 }

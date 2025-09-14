@@ -5,54 +5,204 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mining App</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <style>
-    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;background:#0b0f14;color:#e8f0ff}
-.app{max-width:480px;margin:0 auto;padding:16px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-h1{font-size:20px;margin:0}
-.card{background:#101823;border:1px solid #1f2a3a;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-button{border:none;border-radius:12px;padding:10px 12px;font-weight:600;background:#9f5adf;color:#fff;box-shadow:0 6px 16px rgba(42,112,255,.35)}
-button[disabled]{opacity:.5;cursor:not-allowed;box-shadow:none}
-.timer-row,.score-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0}
-.tiers{margin:8px 0 0 0;padding:0;list-style:none}
-.tiers li{margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.small{font-size:12px;opacity:.85}
-footer{opacity:.7;text-align:center;margin-top:24px}
-#walletBox{display:flex;gap:8px;align-items:center}
-#walletAddress{background:#0a1220;padding:6px 10px;border:1px solid #1f2a3a;border-radius:10px}
-.fa-star{
-color: #8A2BE2;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    canvas {
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Arial, sans-serif;
+      background: linear-gradient(135deg, #8A2BE2, #191970);
+      color: #e8f0ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .stars-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, #8A2BE2, #191970);
-      background-size: 200% 100%;
-      animation: slide 6s ease-in-out infinite alternate;
       z-index: -1;
-    }
-    @keyframes slide {
-      0%   { background-position: left; }
-      100% { background-position: right; }
+      background: linear-gradient(135deg, #8A2BE2, #191970);
+      animation: gradientShift 6s ease-in-out infinite alternate;
     }
 
-    header {
+    @keyframes gradientShift {
+      0% { background: linear-gradient(135deg, #8A2BE2, #191970); }
+      100% { background: linear-gradient(135deg, #191970, #8A2BE2); }
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.3; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+.app {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  background: rgba(16, 24, 35, 0.9);
+  border: 1px solid rgba(159, 90, 223, 0.3);
+  border-radius: 0; /* որ ամբողջ էկրանը լինի */
+  padding: 30px;
+  margin: 0;
+  min-height: 100vh; /* լիքը էկրանի բարձրություն */
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* բովանդակությունը կեդրոնում */
+}
+
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #8A2BE2, #e8f0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #e8f0ff;
+    }
+
+    .mining-section {
+      text-align: center;
+    }
+
+    .status-display {
+      background: rgba(138, 43, 226, 0.1);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .countdown {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #8A2BE2;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .score-display {
       display: flex;
-      justify-content: flex-start;
+      justify-content: space-between;
       align-items: center;
-      padding: 10px;
+      background: rgba(25, 25, 112, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
     }
 
+    .score-item {
+      text-align: center;
+    }
+
+    .score-number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #8A2BE2;
+    }
+
+    button {
+      background: linear-gradient(45deg, #8A2BE2, #9f5adf);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 15px 25px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px 5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 2px 10px rgba(138, 43, 226, 0.2);
+    }
+
+    .fa-star {
+      color: #FFD700;
+      margin-left: 5px;
+    }
+
+    .status-text {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .ready {
+      color: #00ff00;
+      animation: pulse 1s infinite;
+    }
+
+    .active {
+      color: #8A2BE2;
+    }
+
+    .inactive {
+      color: #888;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(45deg, #8A2BE2, #00ff00);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
       .back-btn {
       position: fixed;
-      top: 15px;
-      left: 15px;
+      top: 1px;
+      left: 3px;
       background: #7c20ce;
       color: #ffffff;
       border: none;
@@ -68,157 +218,220 @@ color: #8A2BE2;
     .back-btn:hover {
       background: #eee;
     }
- 
+  .fa-star{
+color: #ffffff;
+  }
+
   </style>
 </head>
 <body>
-  <canvas id="starCanvas"></canvas>
-
+  <div class="stars-container" id="starsContainer"></div>
+  
   <div class="app">
-    <header>
-      <!-- 🔙 Back Button -->
+   <header>
       <a href="index.html">
         <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
       </a>
     </header>
 
     <main>
-      <section class="card">
-        <h2>Mining <i class="fas fa-star"></i>(3-hour cycle)</h2>
-        <p>You can claim your points every 3 hours.</p>
-        <div class="timer-row">
-          <div>
-            <div>Status: <span id="statusText">Inactive</span></div>
-            <div>Countdown: <span id="countdown">00:00:00</span></div>
+      <section class="card mining-section">
+        <h2><i class="fas fa-pickaxe"></i> Star Farming</h2>
+        <p>You can claim your stars every 3 hours.</p>
+        
+        <div class="status-display">
+          <div class="status-text">Status: <span id="statusText" class="inactive">Inactive</span></div>
+          <div class="countdown" id="countdown">00:00:00</div>
+        </div>
+
+        <div class="score-display">
+          <div class="score-item">
+            <div>Your Stars</div>
+            <div class="score-number"><span id="userScore">0</span><i class="fas fa-star"></i></div>
           </div>
-          <div>
-            <button id="startMiningBtn">Start Farming</button>
-            <button id="claimBtn" disabled>Claim<i class="fas fa-star"></i></button>
+          <div class="score-item">
+            <div>Earn per Session</div>
+            <div class="score-number"><span id="perSession">1000</span><i class="fas fa-star"></i></div>
           </div>
         </div>
-        <div class="score-row">
-          <div>Your <span id="userScore">0</span><i class="fas fa-star"></i></div>
-          <div>Earn this session: <span id="perSession">1000</span><i class="fas fa-star"></i></div>
+
+        <div>
+          <button id="startMiningBtn"><i class="fas fa-play"></i> Start Farming</button>
+          <button id="claimBtn" disabled><i class="fas fa-gift"></i> Claim<i class="fas fa-star"></i></button>
+          <button id="boostBtn" ><i class="fa-solid fa-angles-up"></i> Boost</button>
+
         </div>
       </section>
     </main>
   </div>
 
-<script>
-/* ======== ⭐ Background stars ======== */
-const canvas = document.getElementById("starCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+  <div id="notification" class="notification"></div>
 
-const stars = [];
-const numStars = 55;
+  <script>
+    // Constants
+    const THREE_HOURS_MS = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+    // const THREE_HOURS_MS = 10 * 1000; // 10 seconds for testing
 
-for (let i = 0; i < numStars; i++) {
-  stars.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    radius: Math.random() * 1,
-    speed: Math.random() * 0.1 + 0.1,
-    alpha: Math.random(),
-    alphaDirection: Math.random() < 0.5 ? -1 : 1
-  });
-}
+    // DOM Elements
+    const userScoreEl = document.getElementById('userScore');
+    const perSessionEl = document.getElementById('perSession');
+    const statusTextEl = document.getElementById('statusText');
+    const countdownEl = document.getElementById('countdown');
+    const startMiningBtn = document.getElementById('startMiningBtn');
+    const claimBtn = document.getElementById('claimBtn');
+    const notificationEl = document.getElementById('notification');
 
-let lastTime = performance.now();
-
-function draw(currentTime) {
-  const delta = (currentTime - lastTime) / 16.67; 
-  lastTime = currentTime;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  stars.forEach((star) => {
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(200, 200, 200, ${star.alpha})`;
-    ctx.fill();
-
-    star.y += star.speed * delta;
-    if (star.y > canvas.height) {
-      star.y = 0;
-      star.x = Math.random() * canvas.width;
+    // Stars background
+    function createStars() {
+      const container = document.getElementById('starsContainer');
+      const numStars = 50;
+      
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = Math.random() * 3 + 1 + 'px';
+        star.style.height = star.style.width;
+        star.style.animationDelay = Math.random() * 2 + 's';
+        container.appendChild(star);
+      }
     }
 
-    star.alpha += star.alphaDirection * 0.01 * delta;
-    if (star.alpha <= 0 || star.alpha >= 1) {
-      star.alphaDirection *= -1;
+    // Utility functions
+    function getLS(key, defaultValue) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+      } catch {
+        return defaultValue;
+      }
     }
-  });
 
-  requestAnimationFrame(draw);
-}
-requestAnimationFrame(draw);
+    function setLS(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
 
-/* ======== ⛏ Mining Script (քո կոդը 그대로) ======== */
-const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+    function formatTime(ms) {
+      if (ms < 0) ms = 0;
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
 
-const userScoreEl = document.getElementById('userScore');
-const perSessionEl = document.getElementById('perSession');
-const statusText = document.getElementById('statusText');
-const countdownEl = document.getElementById('countdown');
-const startMiningBtn = document.getElementById('startMiningBtn');
-const claimBtn = document.getElementById('claimBtn');
-const activeBoostEl = document.getElementById('activeBoost');
-const buyBtns = document.querySelectorAll('.buyBtn');
+    function showNotification(message) {
+      notificationEl.textContent = message;
+      notificationEl.classList.add('show');
+      setTimeout(() => {
+        notificationEl.classList.remove('show');
+      }, 3000);
+    }
 
-function getLS(key, def){try{return JSON.parse(localStorage.getItem(key))??def}catch{return def}}
-function setLS(key,val){localStorage.setItem(key,JSON.stringify(val))}
-function now(){return Date.now()}
-function formatHMS(ms){if(ms<0)ms=0;const s=Math.floor(ms/1000);const hh=String(Math.floor(s/3600)).padStart(2,'0');const mm=String(Math.floor((s%3600)/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');return`${hh}:${mm}:${ss}`}
-function getUserScore(){return getLS('userScore',0)}
-function addUserScore(delta){const s=getUserScore()+delta;setLS('userScore',s);userScoreEl.textContent=s}
+    // Mining logic
+    function getUserScore() {
+      return getLS('userScore', 0);
+    }
 
-function getMining(){return getLS('mining',{active:false,startAt:0})}
-function setMining(obj){setLS('mining',obj)}
+    function setUserScore(score) {
+      setLS('userScore', score);
+      userScoreEl.textContent = score;
+    }
 
-let currentPerSession = 1000;
+    function addUserScore(amount) {
+      const currentScore = getUserScore();
+      setUserScore(currentScore + amount);
+    }
 
-async function refreshBoostStatus(){
-  const acc = tonConnectUI.account;
-  let wallet = acc?.address;
-  try{
-    const url = new URL(BACKEND_URL+'/api/boost-status');if(wallet)url.searchParams.set('wallet',wallet)
-    const r = await fetch(url.toString());
-    const data = await r.json();
-    currentPerSession = data.perSession??1000;
-    perSessionEl.textContent=currentPerSession;
-    if(data.active){
-      activeBoostEl.textContent=`Active boost – ${currentPerSession}/3h, expires ${new Date(data.expiresAt).toLocaleString()}`;
-    }else{activeBoostEl.textContent='No active boost'}
-  }catch(e){console.error(e);currentPerSession=1000;perSessionEl.textContent=currentPerSession;activeBoostEl.textContent='Boost status unavailable'}
-}
+    function getMiningData() {
+      return getLS('miningData', { active: false, startTime: 0 });
+    }
 
-function tick(){
-  const m=getMining();
-  if(!m.active){statusText.textContent='Passive';claimBtn.disabled=true;countdownEl.textContent='00:00:00';return}
-  const endAt=m.startAt+THREE_HOURS_MS;const left=endAt-now()
-  if(left<=0){statusText.textContent='Ready to Claim';claimBtn.disabled=false;countdownEl.textContent='00:00:00'}else{statusText.textContent='Active';claimBtn.disabled=true;countdownEl.textContent=formatHMS(left)}
-}
+    function setMiningData(data) {
+      setLS('miningData', data);
+    }
 
-startMiningBtn.addEventListener('click',()=>{const m=getMining();if(m.active)return;setMining({active:true,startAt:now()});tick()})
-claimBtn.addEventListener('click',async()=>{const m=getMining();if(!m.active)return;const endAt=m.startAt+THREE_HOURS_MS;if(now()<endAt)return;await refreshBoostStatus();addUserScore(currentPerSession);setMining({active:false,startAt:0});tick();alert(`✅ Claimed ${currentPerSession} userScore`)})
-setInterval(tick,1000);userScoreEl.textContent=getUserScore();tick()
+    function updateUI() {
+      const miningData = getMiningData();
+      const currentTime = Date.now();
+      
+      if (!miningData.active) {
+        statusTextEl.textContent = 'Inactive';
+        statusTextEl.className = 'inactive';
+        countdownEl.textContent = '00:00:00';
+        startMiningBtn.disabled = false;
+        claimBtn.disabled = true;
+        return;
+      }
 
-connectBtn?.addEventListener('click',async()=>{if(tonConnectUI.account){await tonConnectUI.disconnect()}else{await tonConnectUI.openModal()} })
-tonConnectUI.onStatusChange(refreshBoostStatus)
+      const endTime = miningData.startTime + THREE_HOURS_MS;
+      const timeLeft = endTime - currentTime;
 
-buyBtns.forEach(btn=>btn.addEventListener('click',async()=>{
-  const acc = tonConnectUI.account;if(!acc){alert('Connect your wallet first');return}
-  const tierKey = btn.dataset.tier;const tier = TIERS[tierKey];if(!tier){alert('Invalid tier');return}
-  try{
-    const res = await fetch(BACKEND_URL+'/api/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:acc.address,tier:tierKey})})
-    const order = await res.json()
-    await tonConnectUI.sendTransaction({validUntil:Math.floor(Date.now()/1000)+600,messages:[{address:RECEIVER_ADDRESS,amount:String(order.totalNanotons)}]})
-    const vres = await fetch(BACKEND_URL+'/api/verify-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:acc.address,expectedAmount:order.totalNanotons,tier:tierKey})})
-    const vdata = await vres.json();if(vdata.activated){alert('✅ Boost activated for 7 days!');await refreshBoostStatus()}else{alert('❗Could not verify payment yet')}
-  }catch(e){console.error(e);alert('Transaction failed')}
-}))
-</script>
+      if (timeLeft <= 0) {
+        statusTextEl.textContent = 'Ready to Claim!';
+        statusTextEl.className = 'ready';
+        countdownEl.textContent = '00:00:00';
+        startMiningBtn.disabled = true;
+        claimBtn.disabled = false;
+      } else {
+        statusTextEl.textContent = 'Mining Active';
+        statusTextEl.className = 'active';
+        countdownEl.textContent = formatTime(timeLeft);
+        startMiningBtn.disabled = true;
+        claimBtn.disabled = true;
+      }
+    }
+
+    // Event listeners
+    startMiningBtn.addEventListener('click', () => {
+      const miningData = getMiningData();
+      if (miningData.active) return;
+
+      setMiningData({
+        active: true,
+        startTime: Date.now()
+      });
+
+      showNotification('⛏️ Mining started! Come back in 3 hours to claim your stars.');
+      updateUI();
+    });
+
+    claimBtn.addEventListener('click', () => {
+      const miningData = getMiningData();
+      if (!miningData.active) return;
+
+      const currentTime = Date.now();
+      const endTime = miningData.startTime + THREE_HOURS_MS;
+
+      if (currentTime < endTime) return;
+
+      const earnedStars = 1000;
+      addUserScore(earnedStars);
+
+      setMiningData({
+        active: false,
+        startTime: 0
+      });
+
+      showNotification(`✅ Claimed ${earnedStars} stars! Total: ${getUserScore()}`);
+      updateUI();
+    });
+
+    // Initialize
+    function init() {
+      createStars();
+      userScoreEl.textContent = getUserScore();
+      perSessionEl.textContent = '1000';
+      updateUI();
+      
+      // Update UI every second
+      setInterval(updateUI, 1000);
+    }
+
+    // Start the app
+    init();
+  </script>
 </body>
 </html>
