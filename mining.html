@@ -48,28 +48,27 @@
       100% { opacity: 1; transform: scale(1.2); }
     }
 
-.app {
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  z-index: 1;
-}
+    .app {
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      z-index: 1;
+    }
 
-.card {
-  background: rgba(16, 24, 35, 0.9);
-  border: 1px solid rgba(159, 90, 223, 0.3);
-  border-radius: 0; /* որ ամբողջ էկրանը լինի */
-  padding: 30px;
-  margin: 0;
-  min-height: 100vh; /* լիքը էկրանի բարձրություն */
-  box-shadow: none;
-  backdrop-filter: blur(10px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* բովանդակությունը կեդրոնում */
-}
-
+    .card {
+      background: rgba(16, 24, 35, 0.9);
+      border: 1px solid rgba(159, 90, 223, 0.3);
+      border-radius: 0;
+      padding: 30px;
+      margin: 0;
+      min-height: 100vh;
+      box-shadow: none;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
     h1 {
       text-align: center;
@@ -137,6 +136,7 @@
       font-weight: 600;
       margin: 10px 5px;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     button:hover {
@@ -197,7 +197,8 @@
     .notification.show {
       transform: translateX(0);
     }
-      .back-btn {
+
+    .back-btn {
       position: fixed;
       top: 1px;
       left: 3px;
@@ -214,17 +215,96 @@
     .back-btn:hover {
       background: #eee;
     }
-  .fa-star{
-color: #ffffff;
-  }
 
+    .fa-star {
+      color: #ffffff;
+    }
+
+    .boost-popup {
+      display: none;
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .boost-content {
+      background: rgba(16,24,35,0.95);
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      border: 1px solid #8A2BE2;
+      box-shadow: 0 0 25px rgba(138,43,226,0.6);
+    }
+
+    .boost-content h2 {
+      margin-bottom: 15px;
+      background: linear-gradient(45deg,#8A2BE2,#fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .boost-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(138,43,226,0.1);
+      border: 1px solid rgba(138,43,226,0.3);
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .boost-option:hover {
+      background: rgba(138,43,226,0.2);
+    }
+
+    .boost-option.bought {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(100,100,100,0.1);
+    }
+
+    .boost-option span {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .boost-option button {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      background: linear-gradient(45deg,#8A2BE2,#9f5adf);
+      border: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .boost-option.bought button {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      background: #444;
+    }
   </style>
 </head>
 <body>
   <div class="stars-container" id="starsContainer"></div>
   
   <div class="app">
-   <header>
+    <header>
       <a href="index.html">
         <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
       </a>
@@ -254,201 +334,38 @@ color: #ffffff;
         <div>
           <button id="startMiningBtn"><i class="fas fa-play"></i> Start Farming</button>
           <button id="claimBtn" disabled><i class="fas fa-gift"></i> Claim<i class="fas fa-star"></i></button>
-          <button id="boostBtn" ><i class="fa-solid fa-angles-up"></i> Boost</button>
-
+          <button id="boostBtn"><i class="fa-solid fa-angles-up"></i> Boost</button>
         </div>
       </section>
     </main>
   </div>
 
   <div id="notification" class="notification"></div>
-<!-- Boost Popup -->
-<div id="boostPopup" class="boost-popup">
-  <div class="boost-content">
-    <h2><i class="fa-solid fa-angles-up"></i> Choose Your Boost</h2>
-    <p>Upgrade your mining reward every 3 hours.</p>
-    
-    <div class="boost-option" onclick="buyBoost(30000,2000)">
-      <span>30000 ⭐ → +2000 per session</span>
-      <button>Buy</button>
-    </div>
 
-    <div class="boost-option" onclick="buyBoost(60000,3500)">
-      <span>60000 ⭐ → +3500 per session</span>
-      <button>Buy</button>
-    </div>
+  <!-- Boost Popup -->
+  <div id="boostPopup" class="boost-popup">
+    <div class="boost-content">
+      <h2><i class="fa-solid fa-angles-up"></i> Choose Your Boost</h2>
+      <p>Upgrade your mining reward every 3 hours.</p>
+      
+      <div class="boost-option" data-cost="30000" data-reward="2000">
+        <span>30000 ⭐ → +2000 per session</span>
+        <button>Buy</button>
+      </div>
 
-    <div class="boost-option" onclick="buyBoost(100000,5000)">
-      <span>100000 ⭐ → +5000 per session</span>
-      <button>Buy</button>
-    </div>
+      <div class="boost-option" data-cost="60000" data-reward="3500">
+        <span>60000 ⭐ → +3500 per session</span>
+        <button>Buy</button>
+      </div>
 
-    <button class="close-btn" onclick="closeBoostPopup()">Close</button>
+      <div class="boost-option" data-cost="100000" data-reward="5000">
+        <span>100000 ⭐ → +5000 per session</span>
+        <button>Buy</button>
+      </div>
+
+      <button class="close-btn" onclick="closeBoostPopup()">Close</button>
+    </div>
   </div>
-</div>
-
-<style>
-  .boost-popup {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .boost-content {
-    background: rgba(16,24,35,0.95);
-    padding: 25px;
-    border-radius: 15px;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-    border: 1px solid #8A2BE2;
-    box-shadow: 0 0 25px rgba(138,43,226,0.6);
-  }
-
-  .boost-content h2 {
-    margin-bottom: 15px;
-    background: linear-gradient(45deg,#8A2BE2,#fff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .boost-option {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(138,43,226,0.1);
-    border: 1px solid rgba(138,43,226,0.3);
-    border-radius: 10px;
-    padding: 10px 15px;
-    margin: 10px 0;
-  }
-
-  .boost-option span {
-    font-size: 1rem;
-    font-weight: 500;
-  }
-
-  .boost-option button {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    border-radius: 8px;
-    background: linear-gradient(45deg,#8A2BE2,#9f5adf);
-    border: none;
-    color: white;
-    font-weight: bold;
-  }
-
-  .close-btn {
-    margin-top: 15px;
-    background: #444;
-  }
-</style>
-
-<script>
-  const boostBtn = document.getElementById('boostBtn');
-  const boostPopup = document.getElementById('boostPopup');
-
-  boostBtn.addEventListener('click', () => {
-    boostPopup.style.display = 'flex';
-    updateBoostUI();
-  });
-
-  function closeBoostPopup() {
-    boostPopup.style.display = 'none';
-  }
-
-  function buyBoost(cost, reward) {
-    let currentScore = getUserScore();
-
-    if (currentScore < cost) {
-      showNotification("❌ Not enough stars!");
-      return;
-    }
-
-    // Հանել գումարը
-    setUserScore(currentScore - cost);
-
-    // Ավելացնել boost արժեքը
-    let savedReward = getLS("perSessionReward", 1000);
-    let newReward = savedReward + reward;
-
-    setLS("perSessionReward", newReward);
-
-    // Պահել արդեն գնված boost-երի ցուցակը
-    let boughtBoosts = getLS("boughtBoosts", []);
-    if (!boughtBoosts.includes(reward)) {
-      boughtBoosts.push(reward);
-      setLS("boughtBoosts", boughtBoosts);
-    }
-
-    perSessionEl.textContent = newReward;
-    showNotification(`✅ Boost applied! Now you earn ${newReward} ⭐ every 3h`);
-
-    updateBoostUI();
-    closeBoostPopup();
-  }
-
-  function updateBoostUI() {
-    let boughtBoosts = getLS("boughtBoosts", []);
-
-    const boostOptions = document.querySelectorAll(".boost-option");
-    boostOptions.forEach(option => {
-      const [costText, rewardText] = option.getAttribute("onclick")
-        .match(/\d+/g); // cost, reward
-      const reward = parseInt(rewardText);
-
-      const button = option.querySelector("button");
-
-      if (boughtBoosts.includes(reward)) {
-        button.disabled = true;
-        option.style.opacity = "0.5";
-      } else {
-        button.disabled = false;
-        option.style.opacity = "1";
-      }
-    });
-  }
-
-  // Load saved boost on start
-  function loadBoost() {
-    const savedReward = getLS("perSessionReward", 1000);
-    perSessionEl.textContent = savedReward;
-    updateBoostUI();
-  }
-
-  // Claim function
-  claimBtn.addEventListener('click', () => {
-    const miningData = getMiningData();
-    if (!miningData.active) return;
-
-    const currentTime = Date.now();
-    const endTime = miningData.startTime + THREE_HOURS_MS;
-    if (currentTime < endTime) return;
-
-    const earnedStars = getLS("perSessionReward", 1000);
-    addUserScore(earnedStars);
-
-    setMiningData({ active: false, startTime: 0 });
-
-    showNotification(`✅ Claimed ${earnedStars} stars! Total: ${getUserScore()}`);
-    updateUI();
-  });
-
-  // Init
-  function init() {
-    createStars();
-    userScoreEl.textContent = getUserScore();
-    loadBoost(); // Load boost reward
-    updateUI();
-    setInterval(updateUI, 1000);
-  }
-</script>
-
 
   <script>
     // Constants
@@ -463,6 +380,8 @@ color: #ffffff;
     const startMiningBtn = document.getElementById('startMiningBtn');
     const claimBtn = document.getElementById('claimBtn');
     const notificationEl = document.getElementById('notification');
+    const boostBtn = document.getElementById('boostBtn');
+    const boostPopup = document.getElementById('boostPopup');
 
     // Stars background
     function createStars() {
@@ -536,6 +455,24 @@ color: #ffffff;
       setLS('miningData', data);
     }
 
+    // Boost functions
+    function getPerSessionReward() {
+      return getLS('perSessionReward', 1000);
+    }
+
+    function setPerSessionReward(reward) {
+      setLS('perSessionReward', reward);
+      perSessionEl.textContent = reward;
+    }
+
+    function getBoughtBoosts() {
+      return getLS('boughtBoosts', []);
+    }
+
+    function setBoughtBoosts(boosts) {
+      setLS('boughtBoosts', boosts);
+    }
+
     function updateUI() {
       const miningData = getMiningData();
       const currentTime = Date.now();
@@ -567,6 +504,73 @@ color: #ffffff;
       }
     }
 
+    function updateBoostUI() {
+      const boughtBoosts = getBoughtBoosts();
+      const boostOptions = document.querySelectorAll('.boost-option');
+      
+      boostOptions.forEach(option => {
+        const reward = parseInt(option.getAttribute('data-reward'));
+        const button = option.querySelector('button');
+        
+        if (boughtBoosts.includes(reward)) {
+          option.classList.add('bought');
+          button.disabled = true;
+          button.textContent = 'Bought';
+        } else {
+          option.classList.remove('bought');
+          button.disabled = false;
+          button.textContent = 'Buy';
+        }
+      });
+    }
+
+    function buyBoost(cost, reward) {
+      const currentScore = getUserScore();
+      
+      if (currentScore < cost) {
+        showNotification("❌ Not enough stars!");
+        return;
+      }
+
+      const boughtBoosts = getBoughtBoosts();
+      if (boughtBoosts.includes(reward)) {
+        showNotification("❌ Boost already purchased!");
+        return;
+      }
+
+      // Deduct cost
+      setUserScore(currentScore - cost);
+
+      // Add boost to purchased list
+      boughtBoosts.push(reward);
+      setBoughtBoosts(boughtBoosts);
+
+      // Update per session reward
+      const currentReward = getPerSessionReward();
+      const newReward = currentReward + reward;
+      setPerSessionReward(newReward);
+
+      showNotification(`✅ Boost applied! Now you earn ${newReward} ⭐ every 3h`);
+      updateBoostUI();
+      closeBoostPopup();
+    }
+
+    function closeBoostPopup() {
+      boostPopup.style.display = 'none';
+    }
+
+    function loadSavedData() {
+      // Load user score
+      userScoreEl.textContent = getUserScore();
+      
+      // Load per session reward
+      const savedReward = getPerSessionReward();
+      perSessionEl.textContent = savedReward;
+      
+      // Update boost UI
+      updateBoostUI();
+    }
+
     // Event listeners
     startMiningBtn.addEventListener('click', () => {
       const miningData = getMiningData();
@@ -590,7 +594,7 @@ color: #ffffff;
 
       if (currentTime < endTime) return;
 
-      const earnedStars = 1000;
+      const earnedStars = getPerSessionReward();
       addUserScore(earnedStars);
 
       setMiningData({
@@ -602,11 +606,26 @@ color: #ffffff;
       updateUI();
     });
 
+    boostBtn.addEventListener('click', () => {
+      boostPopup.style.display = 'flex';
+      updateBoostUI();
+    });
+
+    // Add event listeners to boost options
+    document.querySelectorAll('.boost-option').forEach(option => {
+      option.addEventListener('click', () => {
+        if (option.classList.contains('bought')) return;
+        
+        const cost = parseInt(option.getAttribute('data-cost'));
+        const reward = parseInt(option.getAttribute('data-reward'));
+        buyBoost(cost, reward);
+      });
+    });
+
     // Initialize
     function init() {
       createStars();
-      userScoreEl.textContent = getUserScore();
-      perSessionEl.textContent = '1000';
+      loadSavedData();
       updateUI();
       
       // Update UI every second

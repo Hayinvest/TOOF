@@ -233,18 +233,28 @@ window.addEventListener("load", () => {
     <!-- Բովանդակության կոնտեյներ -->
     <div class="content">
       <!-- Home Tab (Tasks) -->
-      <div id="home" class="tab-content">
-        <div class="task-section">
-          <h2 class="taskstxt">
-            <i class="fas fa-tasks"></i> 
-            Tasks
-          </h2>
-          
-                    <div class="task-list" id="taskList">
-            <!-- Tasks ներմուծվում են JS-ով -->
-          </div>
-        </div>
-      </div>
+     <!-- ... -->
+<!-- Home Tab (Tasks) -->
+<div id="home" class="tab-content">
+  <div class="task-section">
+    <h2 class="taskstxt">
+      <i class="fas fa-tasks"></i> 
+      Tasks
+    </h2>
+    <!-- Task Tabs Start -->
+    <div class="task-tabs" style="display:flex;gap:8px;margin-bottom:10px;">
+      <button class="task-tab active" data-type="all">All</button>
+      <button class="task-tab" data-type="partners">Partners</button>
+      <button class="task-tab" data-type="completed">Completed</button>
+    </div>
+    <!-- Task Tabs End -->
+
+    <div class="task-list" id="taskList">
+      <!-- Tasks ներմուծվում են JS-ով -->
+    </div>
+  </div>
+</div>
+<!-- ... -->
 
       
   
@@ -585,9 +595,9 @@ profileDiv.innerHTML = `
 </button>
 
             
- <button class="btn spinbtn" onclick="window.location.href=''">
-    <img src="https://raw.githubusercontent.com/Hayinvest/TOOF/refs/heads/main/Video%20Game.webp" alt="play" class="spin-img">
-    <span>Games</span>
+<button class="btn spinbtn" onclick="openGamesPopup()">
+  <img src="https://raw.githubusercontent.com/Hayinvest/TOOF/refs/heads/main/Video%20Game.webp" alt="play" class="spin-img">
+  <span>Games</span>
 </button>
 
 
@@ -595,8 +605,26 @@ profileDiv.innerHTML = `
 </div>
   </div>
 </div>
+<div id="gamespopup" class="popup-overlay">
+  <div class="popup-box">
+    <h2><i class="fa-solid fa-gamepad"></i> Choose a Game</h2>
+    <div class="game-option" onclick="alert('Mystery Box opened!')"><i class="fa-solid fa-box-open"></i> Mystery Box</div>
+    <div class="game-option" onclick="alert('Spin started!')"><i class="fa-solid fa-arrows-spin"></i> Spin</div>
+    <button class="close-btn" onclick="closeGamesPopup()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+</div>
+<script>
+function openGamesPopup() {
+  document.getElementById("gamespopup").style.display = "flex";
+  document.body.classList.add("blurred"); // ✅ Ավելացնում ենք blur
+}
 
+function closeGamesPopup() {
+  document.getElementById("gamespopup").style.display = "none";
+  document.body.classList.remove("blurred"); // ❌ Հանում ենք blur
+}
 
+</script>
 <script>
   // Փոխարինիր քո setupTabs() ֆունկցիան սրանով
 
@@ -1010,16 +1038,6 @@ const defaultTasks = [
     timerId: null,
     icon: '<i class="fas fa-circle-check"  style="color: #ffffffef; font-size: 1.4em;"></i>'
 },
-{
-    id: 11,
-    title: 'Watch an Ad',
-    reward: 1000,
-    status: 'pending',
-    claimAvailable: false,
-    timerId: null,
-    icon: '<i class="fas fa-play-circle" style="color: #ffffffef; font-size: 1.4em;"></i>',
-    type: 'ad'
-}
 
 ];
 function trackLoginDay() {
@@ -1481,7 +1499,132 @@ if (task.id === 10) {
     saveState();
 }
 
+// Add after your defaultTasks, tasks, etc.
 
+let currentTaskTab = 'all';
+
+// Partners task titles (can use IDs if preferred)
+const partnerTaskTitles = [
+  'Join Hayinvest Channel',
+  'Join X Community',
+  'Follow Instagram channel'
+];
+
+// Task Tabs logic
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.task-tab').forEach(tabBtn => {
+    tabBtn.addEventListener('click', function() {
+      document.querySelectorAll('.task-tab').forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+      currentTaskTab = this.getAttribute('data-type');
+      renderTasks();
+    });
+  });
+});
+
+// Patched renderTasks
+function renderTasks() {
+  const taskList = document.getElementById('taskList');
+  if (!taskList) return;
+  taskList.innerHTML = '';
+
+  let filteredTasks;
+  if (currentTaskTab === 'all') {
+    filteredTasks = tasks; // Show all active tasks
+  } else if (currentTaskTab === 'partners') {
+    filteredTasks = tasks.filter(task => partnerTaskTitles.includes(task.title));
+  } else if (currentTaskTab === 'completed') {
+    const claimedTaskIds = JSON.parse(localStorage.getItem('claimedTaskIds') || '[]');
+    // Show completed tasks from defaultTasks
+    filteredTasks = defaultTasks.filter(task => claimedTaskIds.includes(task.id));
+  }
+
+  if (filteredTasks.length === 0) {
+    const noTasksMessage = document.createElement('div');
+    noTasksMessage.classList.add('no-tasks-message');
+    noTasksMessage.textContent = currentTaskTab === 'completed'
+      ? 'No completed tasks yet!'
+      : 'No tasks available!';
+    noTasksMessage.style.textAlign = 'center';
+    noTasksMessage.style.padding = '20px';
+    noTasksMessage.style.color = '#666';
+    taskList.appendChild(noTasksMessage);
+    return;
+  }
+
+  // Render each filtered task
+  filteredTasks.forEach(task => {
+    const taskItem = document.createElement('div');
+    taskItem.classList.add('task-item');
+    
+    // Left part: Icon, Title, Reward
+    const taskLeft = document.createElement('div');
+    taskLeft.classList.add('task-left');
+    
+    const iconDiv = document.createElement('div');
+    iconDiv.classList.add('task-icon');
+    if (task.icon && task.icon.startsWith('http')) {
+      const img = document.createElement('img');
+      img.src = task.icon;
+      img.style.width = '24px';
+      img.style.height = '24px';
+      iconDiv.appendChild(img);
+    } else {
+      iconDiv.innerHTML = task.icon || '';
+    }
+    
+    const taskInfo = document.createElement('div');
+    taskInfo.classList.add('task-info');
+    
+    const taskTitle = document.createElement('div');
+    taskTitle.classList.add('task-title');
+    taskTitle.textContent = task.title;
+    
+    const taskReward = document.createElement('div');
+    taskReward.classList.add('task-reward');
+    taskReward.innerHTML = `+${task.reward || 0} <i class="fas fa-star"></i>`;
+    
+    taskInfo.appendChild(taskTitle);
+    taskInfo.appendChild(taskReward);
+    taskLeft.appendChild(iconDiv);
+    taskLeft.appendChild(taskInfo);
+    
+    // Right part: Action button
+    const taskRight = document.createElement('div');
+    taskRight.classList.add('task-right');
+    const actionBtn = document.createElement('button');
+    
+    if (currentTaskTab !== 'completed') {
+      if (task.status === 'pending') {
+        actionBtn.textContent = 'Start';
+        actionBtn.classList.add('start-btn');
+        actionBtn.addEventListener('click', () => handleStart(task.id));
+      } else if (task.status === 'started') {
+        if (!task.claimAvailable) {
+          actionBtn.textContent = 'Wait...';
+          actionBtn.classList.add('waiting-btn');
+          actionBtn.disabled = true;
+        } else {
+          actionBtn.textContent = 'Claim';
+          actionBtn.classList.add('claim-btn');
+          actionBtn.addEventListener('click', () => handleClaim(task.id));
+        }
+      }
+      taskRight.appendChild(actionBtn);
+    } else {
+      // Completed tab: show a "Completed" label
+      const completedLabel = document.createElement('span');
+      completedLabel.textContent = 'Completed';
+      completedLabel.style.color = '#12d176';
+      completedLabel.style.fontWeight = 'bold';
+      taskRight.appendChild(completedLabel);
+    }
+
+    taskItem.appendChild(taskLeft);
+    taskItem.appendChild(taskRight);
+    taskList.appendChild(taskItem);
+  });
+}
 /**
  * Handle the Claim button click
  */
