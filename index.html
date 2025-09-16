@@ -622,8 +622,12 @@ profileDiv.innerHTML = `
 <div id="gamespopup" class="popup-overlay">
   <div class="popup-box">
     <h2><i class="fa-solid fa-gamepad"></i> Choose a Game</h2>
-    <div class="game-option" onclick="alert('Mystery Box opened!')"><i class="fa-solid fa-box-open"></i> Mystery Box</div>
-    <div class="game-option" onclick="alert('Spin started!')"><i class="fa-solid fa-arrows-spin"></i> Spin</div>
+<div class="game-option" onclick="window.location.href='mystery.html'">
+  <i class="fa-solid fa-box-open"></i> Mystery Box
+</div>
+<div class="game-option" onclick="window.location.href='spin.html'">
+  <i class="fa-solid fa-arrows-spin"></i> Spin
+</div>
     <button class="close-btn" onclick="closeGamesPopup()"><i class="fa-solid fa-xmark"></i></button>
   </div>
 </div>
@@ -822,7 +826,7 @@ document.getElementById("userScoreDisplay").innerHTML = `
           setTimeout(() => {
               document.getElementById("loadingScreen").style.display = "none";
           }, 2000);
-      }, 1300);
+      }, 1000);
   </script>
 
   <script>

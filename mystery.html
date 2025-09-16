@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystery Box - Arcane Gacha</title>
+    <meta name="description" content="Open mystery boxes and win amazing rewards! Different tiers with better prizes." />
+    <meta name="author" content="Arcane Gacha" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Mystery Box - Arcane Gacha" />
+    <meta property="og:description" content="Open mystery boxes and win amazing rewards!" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+        * Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    background: linear-gradient(135deg, #1a0b2e 0%, #7c20ce 50%, #1a0b2e 100%);
+    min-height: 100vh;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Header */
+.header {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(124, 32, 206, 0.3);
+    top: 0;
+    z-index: 100;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #7c20ce, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.score-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(124, 32, 206, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 1px solid rgba(124, 32, 206, 0.4);
+}
+
+.score-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.score-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #a855f7;
+}
+
+/* Hero Section */
+.hero {
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #ffffff, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Boxes Section */
+.boxes-section {
+    padding: 2rem 0 4rem;
+}
+
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Box Cards */
+.box-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 1px solid rgba(124, 32, 206, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.box-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(124, 32, 206, 0.1) 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.box-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(124, 32, 206, 0.6);
+    box-shadow: 0 20px 40px rgba(124, 32, 206, 0.3);
+}
+
+.box-card:hover::before {
+    opacity: 1;
+}
+
+.box-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.box-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.box-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+}
+
+.box-icon.bronze { filter: hue-rotate(30deg) brightness(0.8); }
+.box-icon.silver { filter: brightness(1.2); }
+.box-icon.gold { filter: hue-rotate(45deg) brightness(1.3); }
+.box-icon.platinum { filter: hue-rotate(280deg) brightness(1.4); }
+
+.box-content {
+    text-align: center;
+}
+
+.box-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #a855f7;
+    margin-bottom: 1.5rem;
+}
+
+.box-rewards {
+    margin-bottom: 2rem;
+}
+
+.rewards-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.rewards-list {
+    list-style: none;
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.rewards-list li {
+    margin: 0.25rem 0;
+}
+
+.open-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #7c20ce, #a855f7);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.open-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.open-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(124, 32, 206, 0.4);
+}
+
+.open-btn:hover::before {
+    left: 100%;
+}
+
+.open-btn:active {
+    transform: translateY(0);
+}
+
+.open-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(124, 32, 206, 0.2));
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 2px solid rgba(124, 32, 206, 0.6);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: modalEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.modal-header {
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #a855f7;
+}
+
+.modal-body {
+    margin-bottom: 2rem;
+}
+
+.reward-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 0.6s ease;
+}
+
+.reward-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.reward-type {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.reward-type.high {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.reward-type.low {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.close-btn {
+    background: linear-gradient(135deg, #7c20ce, #a855f7);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(124, 32, 206, 0.4);
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes modalEnter {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40%, 43% {
+        transform: translateY(-20px);
+    }
+    70% {
+        transform: translateY(-10px);
+    }
+    90% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .boxes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .box-card {
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+    }
+    
+    .header .container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+    
+    .hero {
+        padding: 2rem 0;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .boxes-section {
+        padding: 1rem 0 2rem;
+    }
+}
+ .back-btn {
+      position: fixed;
+      top: 1px;
+      left: 3px;
+      background: #7d20ce1d;
+      color: #ffffff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      z-index: 10;
+    }
+    </style>
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🎁 Mystery Boxes</h1>
+            <div class="score-display">
+                <span class="score-label"><i class="fas fa-star"></i></span>
+                <span id="userScore" class="score-value">50000</span>
+            </div>
+        </div>
+        <a href="index.html">
+        <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
+      </a>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <div class="container">
+                <h2 class="hero-title">Choose Your Mystery Box</h2>
+                <p class="hero-description">Higher tier boxes have better rewards and higher chances of rare items!</p>
+            </div>
+        </section>
+
+        <section class="boxes-section">
+            <div class="container">
+                <div class="boxes-grid">
+                    <!-- Bronze Box -->
+                    <article class="box-card" data-tier="bronze">
+                        <div class="box-header">
+                            <h3 class="box-title">Bronze Box</h3>
+                            <div class="box-icon bronze">📦</div>
+                        </div>
+                        <div class="box-content">
+                            <p class="box-price">5,000 Points</p>
+                            <div class="box-rewards">
+                                <p class="rewards-title">Possible Rewards:</p>
+                                <ul class="rewards-list">
+                                    <li>2,500 Points</li>
+                                    <li>5,500 Points</li>
+                                    <li>7,000 Points</li>
+                                    <li>10,000 Points</li>
+                                </ul>
+                            </div>
+                            <button class="open-btn" data-cost="5000" data-tier="bronze">
+                                Open Box
+                            </button>
+                        </div>
+                    </article>
+
+                    <!-- Silver Box -->
+                    <article class="box-card" data-tier="silver">
+                        <div class="box-header">
+                            <h3 class="box-title">Silver Box</h3>
+                            <div class="box-icon silver">🎁</div>
+                        </div>
+                        <div class="box-content">
+                            <p class="box-price">15,000 Points</p>
+                            <div class="box-rewards">
+                                <p class="rewards-title">Possible Rewards:</p>
+                                <ul class="rewards-list">
+                                    <li>8,000 Points</li>
+                                    <li>15,000 Points</li>
+                                    <li>20,000 Points</li>
+                                    <li>30,000 Points</li>
+                                </ul>
+                            </div>
+                            <button class="open-btn" data-cost="15000" data-tier="silver">
+                                Open Box
+                            </button>
+                        </div>
+                    </article>
+
+                    <!-- Gold Box -->
+                    <article class="box-card" data-tier="gold">
+                        <div class="box-header">
+                            <h3 class="box-title">Gold Box</h3>
+                            <div class="box-icon gold">💎</div>
+                        </div>
+                        <div class="box-content">
+                            <p class="box-price">35,000 Points</p>
+                            <div class="box-rewards">
+                                <p class="rewards-title">Possible Rewards:</p>
+                                <ul class="rewards-list">
+                                    <li>20,000 Points</li>
+                                    <li>35,000 Points</li>
+                                    <li>50,000 Points</li>
+                                    <li>75,000 Points</li>
+                                </ul>
+                            </div>
+                            <button class="open-btn" data-cost="35000" data-tier="gold">
+                                Open Box
+                            </button>
+                        </div>
+                    </article>
+
+                    <!-- Platinum Box -->
+                    <article class="box-card" data-tier="platinum">
+                        <div class="box-header">
+                            <h3 class="box-title">Platinum Box</h3>
+                            <div class="box-icon platinum">👑</div>
+                        </div>
+                        <div class="box-content">
+                            <p class="box-price">75,000 Points</p>
+                            <div class="box-rewards">
+                                <p class="rewards-title">Possible Rewards:</p>
+                                <ul class="rewards-list">
+                                    <li>40,000 Points</li>
+                                    <li>75,000 Points</li>
+                                    <li>100,000 Points</li>
+                                    <li>150,000 Points</li>
+                                </ul>
+                            </div>
+                            <button class="open-btn" data-cost="75000" data-tier="platinum">
+                                Open Box
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">Box Opened!</h3>
+            </div>
+            <div class="modal-body">
+                <div id="rewardIcon" class="reward-icon">🎉</div>
+                <p id="rewardText" class="reward-text">You won 10,000 points!</p>
+                <div id="rewardType" class="reward-type">High Reward!</div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModal" class="close-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay"></div>
+
+    <script>
+        // Mystery Box Game Logic
+class MysteryBoxGame {
+    constructor() {
+        this.userScore = this.getUserScore();
+        this.initializeElements();
+        this.bindEvents();
+        this.updateScoreDisplay();
+        this.updateButtonStates();
+    }
+
+    // Box tier configurations
+    boxTiers = {
+        bronze: {
+            cost: 5000,
+            rewards: [2500, 5500, 7000, 10000],
+            highRewardThreshold: 7000
+        },
+        silver: {
+            cost: 15000,
+            rewards: [8000, 15000, 20000, 30000],
+            highRewardThreshold: 20000
+        },
+        gold: {
+            cost: 35000,
+            rewards: [20000, 35000, 50000, 75000],
+            highRewardThreshold: 50000
+        },
+        platinum: {
+            cost: 75000,
+            rewards: [40000, 75000, 100000, 150000],
+            highRewardThreshold: 100000
+        }
+    };
+
+    initializeElements() {
+        this.scoreElement = document.getElementById('userScore');
+        this.openButtons = document.querySelectorAll('.open-btn');
+        this.modal = document.getElementById('resultModal');
+        this.overlay = document.getElementById('overlay');
+        this.modalTitle = document.getElementById('modalTitle');
+        this.rewardIcon = document.getElementById('rewardIcon');
+        this.rewardText = document.getElementById('rewardText');
+        this.rewardType = document.getElementById('rewardType');
+        this.closeModalBtn = document.getElementById('closeModal');
+    }
+
+    bindEvents() {
+        // Bind open box buttons
+        this.openButtons.forEach(button => {
+            button.addEventListener('click', (e) => this.openBox(e));
+        });
+
+        // Bind modal close events
+        this.closeModalBtn.addEventListener('click', () => this.closeModal());
+        this.overlay.addEventListener('click', () => this.closeModal());
+        
+        // Handle escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.closeModal();
+        });
+    }
+
+    getUserScore() {
+        const stored = localStorage.getItem('userScore');
+        return stored ? parseInt(stored, 10) : 50000;
+    }
+
+    setUserScore(score) {
+        this.userScore = score;
+        localStorage.setItem('userScore', score.toString());
+        this.updateScoreDisplay();
+        this.updateButtonStates();
+    }
+
+    updateScoreDisplay() {
+        if (this.scoreElement) {
+            this.scoreElement.textContent = this.userScore.toLocaleString();
+        }
+    }
+
+    updateButtonStates() {
+        this.openButtons.forEach(button => {
+            const cost = parseInt(button.dataset.cost, 10);
+            const canAfford = this.userScore >= cost;
+            
+            button.disabled = !canAfford;
+            button.textContent = canAfford ? 'Open Box' : 'Not Enough Points';
+            
+            if (!canAfford) {
+                button.style.opacity = '0.6';
+            } else {
+                button.style.opacity = '1';
+            }
+        });
+    }
+
+    openBox(event) {
+        const button = event.target;
+        const tier = button.dataset.tier;
+        const cost = parseInt(button.dataset.cost, 10);
+
+        if (this.userScore < cost) {
+            this.showNotification('Not enough points!', 'error');
+            return;
+        }
+
+        // Deduct cost
+        this.setUserScore(this.userScore - cost);
+
+        // Add opening animation
+        button.textContent = 'Opening...';
+        button.disabled = true;
+
+        // Simulate opening delay
+        setTimeout(() => {
+            const reward = this.calculateReward(tier);
+            this.setUserScore(this.userScore + reward.amount);
+            this.showRewardModal(reward, tier);
+            
+            // Reset button
+            button.textContent = 'Open Box';
+            this.updateButtonStates();
+        }, 1000);
+    }
+
+    calculateReward(tier) {
+        const config = this.boxTiers[tier];
+        const rewards = config.rewards;
+        
+        // 40% chance for high reward (last 2 rewards), 60% for low rewards (first 2 rewards)
+        const isHighReward = Math.random() < 0.25;
+        
+        let selectedReward;
+        if (isHighReward) {
+            // Select from higher rewards (last 2)
+            selectedReward = rewards[Math.floor(Math.random() * 2) + 2];
+        } else {
+            // Select from lower rewards (first 2)
+            selectedReward = rewards[Math.floor(Math.random() * 2)];
+        }
+
+        return {
+            amount: selectedReward,
+            isHigh: selectedReward >= config.highRewardThreshold
+        };
+    }
+
+    showRewardModal(reward, tier) {
+        // Set modal content
+        this.modalTitle.textContent = `${tier.charAt(0).toUpperCase() + tier.slice(1)} Box Opened!`;
+        this.rewardText.textContent = `You won ${reward.amount.toLocaleString()} points!`;
+        
+        // Set reward type and icon
+        if (reward.isHigh) {
+            this.rewardType.textContent = 'High Reward! 🎉';
+            this.rewardType.className = 'reward-type high';
+            this.rewardIcon.textContent = '💎';
+        } else {
+            this.rewardType.textContent = 'Standard Reward';
+            this.rewardType.className = 'reward-type low';
+            this.rewardIcon.textContent = '🎁';
+        }
+
+        // Show modal
+        this.modal.classList.add('active');
+        this.overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Add celebration effect for high rewards
+        if (reward.isHigh) {
+            this.createCelebrationEffect();
+        }
+    }
+
+    closeModal() {
+        this.modal.classList.remove('active');
+        this.overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    createCelebrationEffect() {
+        // Create floating particles
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                this.createParticle();
+            }, i * 100);
+        }
+    }
+
+    createParticle() {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #7c20ce, #a855f7);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            left: ${Math.random() * window.innerWidth}px;
+            top: ${window.innerHeight}px;
+            animation: particleFloat 3s ease-out forwards;
+        `;
+
+        document.body.appendChild(particle);
+
+        // Remove particle after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 3000);
+    }
+
+    showNotification(message, type = 'info') {
+        // Simple notification system
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'error' ? '#ef4444' : '#7c20ce'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            z-index: 10001;
+            animation: slideIn 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Add particle animation to CSS dynamically
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes particleFloat {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Initialize the game when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new MysteryBoxGame();
+});
+
+// Add some extra interactivity
+document.addEventListener('DOMContentLoaded', () => {
+    // Add hover sound effect (visual feedback)
+    const boxCards = document.querySelectorAll('.box-card');
+    boxCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Add click ripple effect to buttons
+    const buttons = document.querySelectorAll('.open-btn, .close-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.height, rect.width);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+});
+
+// Add ripple animation
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(rippleStyle);
+    </script>
+</body>
+</html>

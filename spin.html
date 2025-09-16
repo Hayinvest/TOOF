@@ -1,537 +1,572 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hy">
 <head>
-  <meta charset="UTF-8" />
-  <title>TON Spin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 1px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      color: white;
-    }
-    .container {
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-    }
-    h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
-    button {
-      border: none;
-      padding: 12px 25px;
-      font-size: 15px;
-      border-radius: 50px;
-      margin: 10px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      color: white;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    
-    #payBtn {
-      background: linear-gradient(45deg, #7c20ce, #5d0ba4);
-    }
-    
-    #payBtn:hover:not(:disabled) {
-      background: linear-gradient(45deg, #7c20ce, #5d0ba4);
-      transform: translateY(-2px);
-    }
-    
-    #spinBtn {
-      background: linear-gradient(45deg, #7c20ce, #5d0ba4);
-    }
-    
-    #spinBtn:hover:not(:disabled) {
-      background: linear-gradient(45deg, #45057d, #31025a);
-      transform: translateY(-2px);
-    }
-  
-    button:disabled {
-      background: linear-gradient(45deg, #666, #888);
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-    
-    #connect-root { 
-      margin: 15px 50px;
-    }
-    
-    #spinsLeft, #result, #userScore {
-      font-size: 1.1em;
-      margin: 15px 0;
-      padding: 12px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    
-    .loading {
-      display: none;
-      margin: 10px 0;
-      animation: pulse 1.5s infinite;
-      padding: 12px;
-      border-radius: 15px;
-      background: rgba(255, 215, 0, 0.2);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-    }
-    
-    .loading.show { 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Spin Mobile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0b2e, #7c20ce, #c77dff);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+        }
 
-    .wheel-container {
-      position: relative;
-      margin: 30px auto;
-      width: 320px;
-      height: 320px;
-    }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
 
-    #pointer {
-      position: absolute;
-      top: -40px;
-      left: 47%;
-      transform: translateX(-50%);
-      width: 0; 
-      height: 0;
-      border-left: 12px solid transparent;
-      border-right: 12px solid transparent;
-      border-top: 30px solid #ff0000;
-      z-index: 10;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-      animation: pointerGlow 2s infinite;
-    }
+        .header {
+            margin-bottom: 30px;
+        }
 
-    @keyframes pointerGlow {
-      0%, 100% { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
-      50% { filter: drop-shadow(0 4px 15px rgba(204, 0, 0, 0.8)); }
-    }
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffffff, #c77dff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
 
-    #wheel {
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      position: relative;
-      overflow: hidden;
-      transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
-      box-shadow: 
-        0 0 0 8px #7c20ce,
-        0 0 0 12px rgba(249, 249, 249, 0.3),
-        0 8px 30px rgba(0,0,0,0.4);
-      background: conic-gradient(
-        from 0deg,
-        #FF6B6B 0deg 51.43deg,
-        #4ECDC4 51.43deg 102.86deg,
-        #45B7D1 102.86deg 154.29deg,
-        #96CEB4 154.29deg 205.71deg,
-        #FFEAA7 205.71deg 257.14deg,
-        #DDA0DD 257.14deg 308.57deg,
-        #98D8C8 308.57deg 360deg
-      );
-    }
+        .user-score {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
 
-    .sector {
-      width: 50%;
-      height: 50%;
-      position: absolute;
-      top: 50%; 
-      left: 50%;
-      transform-origin: 0% 0%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-      border-left: 2px solid rgba(255,255,255,0.3);
-    }
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+        }
 
-    .sector:nth-child(1) { transform: rotate(0deg) skewY(38.57deg); }
-    .sector:nth-child(2) { transform: rotate(51.43deg) skewY(38.57deg); }
-    .sector:nth-child(3) { transform: rotate(102.86deg) skewY(38.57deg); }
-    .sector:nth-child(4) { transform: rotate(154.29deg) skewY(38.57deg); }
-    .sector:nth-child(5) { transform: rotate(205.71deg) skewY(38.57deg); }
-    .sector:nth-child(6) { transform: rotate(257.14deg) skewY(38.57deg); }
-    .sector:nth-child(7) { transform: rotate(308.57deg) skewY(38.57deg); }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(124, 32, 206, 0.5);
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
 
-    /* Center circle */
-    #wheel::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(45deg, #7c20ce, #650eb2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      z-index: 5;
-    }
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
 
-    /* Spinning animation */
-    .spinning {
-      animation: sparkle 0.5s infinite;
-    }
+        .segment-text {
+            position: absolute;
+            right: 25%;
+            top: 25%;
+            transform: rotate(-25.71deg);
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
 
-    @keyframes sparkle {
-      0%, 100% { box-shadow: 
-        0 0 0 8px #7c20ce,
-        0 0 0 12px rgba(163, 163, 159, 0.3),
-        0 8px 30px rgba(0,0,0,0.4); }
-      50% { box-shadow: 
-        0 0 0 8px #7c20ce,
-        0 0 0 12px rgba(234, 234, 234, 0.8),
-        0 8px 30px rgba(159, 159, 159, 0.3),
-        0 0 50px rgba(255, 255, 255, 0.5); }
-    }
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #7c20ce, #c77dff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(124, 32, 206, 0.8);
+            transition: transform 0.2s;
+        }
 
-    /* Icon styling with colors */
-    .fa-hourglass-half { color: #FFD700; } /* Gold for loading */
-    .fa-ticket-alt { color: #0fbaee; } /* Teal for spins */
-    .fa-star { color: #7c20ce; } /* Gold for score */
-    .fa-sync-alt { color: white; } /* White for spin button */
-    .fa-check-circle { color: #4CAF50; } /* Green for success */
-    .fa-search-dollar { color: #2196F3; } /* Blue for processing */
-    .fa-exclamation-circle { color: #2196F3; } /* Red for errors */
-    .fa-trophy { color: #FFD700; } /* Gold for winning */
-    .fa-spinner { color: #7c20ce; } /* Purple for spinning */
-    .fa-bullseye { color: white; } /* White for wheel center */
-    .fa-wallet { color: #0088cc; } /* Blue for TON wallet */
+        .wheel-center:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
 
-    /* Responsive design */
-    @media (max-width: 480px) {
-      .wheel-container {
-        width: 280px;
-        height: 280px;
-      }
-      #wheel {
-        width: 260px;
-        height: 260px;
-      }
-      .sector {
-        font-size: 14px;
-      }
-    }
+ .wheel-pointer {
+            position: absolute;
+            top: -25px; /* instead of top */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 25px solid #ffffff; /* flipped arrow */
+            z-index: 15;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
 
-    /* TON icon in button */
-    .ton-icon {
-      width: 20px;
-      height: 20px;
-    }
-    canvas {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-  background: linear-gradient(90deg, #8A2BE2, #191970);
-  background-size: 200% 100%;
+        .spin-button {
+            background: linear-gradient(45deg, #7c20ce, #c77dff);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(124, 32, 206, 0.3);
+            margin-top: 20px;
+        }
 
-  animation: slide 6s ease-in-out infinite alternate;
-}
-@keyframes slide {
-  0%   { background-position: left; }
-  100% { background-position: right; }
-}
-  .back-btn {
-      background: #8225d8;
+        .spin-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(124, 32, 206, 0.4);
+        }
+
+        .spin-button:active {
+            transform: translateY(0);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cost-info {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #c77dff;
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .result-content {
+            background: linear-gradient(135deg, #7c20ce, #c77dff);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 300px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .result-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: sparkle 1.5s infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .wheel-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+
+            .segment-text {
+                font-size: 12px;
+            }
+        }
+            .back-btn {
+      position: fixed;
+      top: 1px;
+      left: 3px;
+      background: #7d20ce00;
       color: #ffffff;
       border: none;
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
       font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.3s;
-      position: absolute;
-      top: 4%;
+      text-decoration: none;
+      z-index: 10;
     }
-  </style>
+    </style>
 </head>
 <body>
-
-    <canvas id="starCanvas"></canvas>
-
-  <div class="container">
-    <div id="connect-root"></div>
+    <header>
         <a href="index.html">
         <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
       </a>
-    <button id="payBtn" disabled>
-      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon">
-      Pay 0.0000001 TON & Get Spin
-    </button>
-    <div class="loading" id="loading">
-      <i class="fas fa-hourglass-half"></i> Processing payment...
+    </header>
+    <div class="container">
+        <div class="header">
+            <div class="user-score">
+                        <i class="fas fa-star"></i> <span id="userScore">0</span>
+            </div>
+        </div>
+
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-segment" style="transform: rotate(0deg); background: linear-gradient(45deg, #ff6b6b, #ff8e8e);">
+                    <div class="segment-text">2,500</div>
+                </div>
+                <div class="wheel-segment" style="transform: rotate(51.43deg); background: linear-gradient(45deg, #4ecdc4, #7fdddb);">
+                    <div class="segment-text">5,000</div>
+                </div>
+                <div class="wheel-segment" style="transform: rotate(102.86deg); background: linear-gradient(45deg, #45b7d1, #74c7e8);">
+                    <div class="segment-text">6,000</div>
+                </div>
+                <div class="wheel-segment" style="transform: rotate(154.29deg); background: linear-gradient(45deg, #f9ca24, #f0c14b);">
+                    <div class="segment-text">8,000</div>
+                </div>
+                <div class="wheel-segment" style="transform: rotate(205.71deg); background: linear-gradient(45deg, #f0932b, #f5a85a);">
+                    <div class="segment-text">10,000</div>
+                </div>
+                <div class="wheel-segment" style="transform: rotate(257.14deg); background: linear-gradient(45deg, #eb4d4b, #f17171);">
+                    <div class="segment-text">15,000</div>
+                </div>
+                <div class="wheel-segment" style="transform: rotate(308.57deg); background: linear-gradient(45deg, #6c5ce7, #8b7bf7);">
+                    <div class="segment-text">20,000</div>
+                </div>
+            </div>
+            <div class="wheel-center" onclick="spinWheel()">SPIN</div>
+        </div>
+
+  <button class="spin-button" id="spinButton" onclick="spinWheel()">
+            Spin the Wheel
+        </button>
+        <div class="cost-info">
+            Cost: 5,000 <i class="fas fa-star"></i>
+        </div>
     </div>
 
-    <!-- Enhanced Spin Wheel -->
-    <div class="wheel-container">
-      <div id="pointer"></div>
-      <div id="wheel"></div>
+     <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <h2 class="result-title">Congratulations!</h2>
+            <div class="result-amount" id="resultAmount">0</div>
+            <p>You won <span id="winAmount">0</span> points!</p>
+            <button class="close-button" onclick="closeModal()">Close</button>
+        </div>
     </div>
 
-    <button id="spinBtn" disabled>
-      <i class="fas fa-sync-alt"></i> Spin the Wheel!
-    </button>
-    <div id="spinsLeft">
-      <i class="fas fa-ticket-alt"></i> Spins left: 0
-    </div>
-    <div id="userScore">
-      <i class="fas fa-star"></i> UserScore: 0
-    </div>
-    <div id="result"></div>
-  </div>
+    <script>
+        // Initialize user score
+        if (!localStorage.getItem('userScore')) {
+            localStorage.setItem('userScore', '50000');
+        }
 
-  <script>
-  const BACKEND_URL = "https://ton-check.onrender.com";
-  const RECEIVER = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm";
-  const AMOUNT = 100; // nanotons
+        // Prize configuration with exact angles and weights
+        const prizes = [
+            { value: 2500, weight: 35, angle: 0, color: '#ff6b6b' },
+            { value: 5000, weight: 25, angle: 51.43, color: '#4ecdc4' },
+            { value: 6000, weight: 20, angle: 102.86, color: '#45b7d1' },
+            { value: 8000, weight: 10, angle: 154.29, color: '#f9ca24' },
+            { value: 10000, weight: 6, angle: 205.71, color: '#f0932b' },
+            { value: 15000, weight: 3, angle: 257.14, color: '#eb4d4b' },
+            { value: 20000, weight: 1, angle: 308.57, color: '#6c5ce7' }
+        ];
 
-  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: "https://hayinvest.github.io/TOOF/tonconnect-manifest.json",
-    buttonRootId: "connect-root",
-    uiPreferences: { theme: "SYSTEM" }
-  });
+        const spinCost = 5000;
+        let isSpinning = false;
+        let currentRotation = 0;
 
-  let spins = 2;
-  let userScore = parseInt(localStorage.getItem("userScore")) || 0;
-  let isSpinning = false;
+        function updateUserScore() {
+            const score = localStorage.getItem('userScore') || '0';
+            document.getElementById('userScore').textContent = parseInt(score).toLocaleString();
+            
+            const button = document.getElementById('spinButton');
+            const wheelCenter = document.querySelector('.wheel-center');
+            
+             if (parseInt(score) < spinCost) {
+                button.disabled = true;
+                button.textContent = 'Not enough points';
+                wheelCenter.style.cursor = 'not-allowed';
+                wheelCenter.style.opacity = '0.5';
+            } else {
+                button.disabled = false;
+                button.textContent = 'Spin the Wheel';
+                wheelCenter.style.cursor = 'pointer';
+                wheelCenter.style.opacity = '1';
+            }
+        }
 
-  const payBtn = document.getElementById("payBtn");
-  const spinBtn = document.getElementById("spinBtn");
-  const resultEl = document.getElementById("result");
-  const spinsEl = document.getElementById("spinsLeft");
-  const loadingEl = document.getElementById("loading");
-  const userScoreEl = document.getElementById("userScore");
-  const wheel = document.getElementById("wheel");
+        function getRandomPrize() {
+            const totalWeight = prizes.reduce((sum, prize) => sum + prize.weight, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (let i = 0; i < prizes.length; i++) {
+                random -= prizes[i].weight;
+                if (random <= 0) {
+                    return { prize: prizes[i], index: i };
+                }
+            }
+            
+            return { prize: prizes[0], index: 0 };
+        }
 
-  // draw wheel etc (keep your existing drawWheel)
-  const rewards = [500, 1000, 2000, 4000, 5000, 8000, 10000];
-  const weights = [2,2,2,2,2,2,2];
-  const totalWeight = weights.reduce((a,b)=>a+b,0);
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            const currentScore = parseInt(localStorage.getItem('userScore') || '0');
+            if (currentScore < spinCost) {
+                alert('Not enough points!');
+                return;
+            }
 
-  function updateUserScore(){
-    userScoreEl.innerHTML = '<i class="fas fa-star"></i> UserScore: ' + userScore.toLocaleString();
-    localStorage.setItem("userScore", userScore);
-  }
-  updateUserScore();
+            isSpinning = true;
+            
+            // Deduct spin cost immediately
+            localStorage.setItem('userScore', (currentScore - spinCost).toString());
+            updateUserScore();
 
-  function updateSpins(){
-    spinsEl.innerHTML = '<i class="fas fa-ticket-alt"></i> Spins left: ' + spins;
-    spinBtn.disabled = spins <= 0 || isSpinning;
-    // enable payBtn only if TonConnect has account
-    const hasAccount = !!(tonConnectUI && tonConnectUI.account && tonConnectUI.account.address);
-    payBtn.disabled = !hasAccount || isSpinning;
-  }
-  updateSpins();
+            const wheel = document.getElementById('wheel');
+            const { prize, index } = getRandomPrize();
+            
+            // Calculate precise rotation
+            const segmentAngle = 360 / 7; // 51.43 degrees per segment
+            const segmentCenter = (index * segmentAngle) + (segmentAngle / 2);
+            
+            // Add randomness within the segment (±15 degrees)
+            const randomOffset = (Math.random() - 0.5) * 30;
+            const targetAngle = segmentCenter + randomOffset;
+            
+            // Calculate final rotation (multiple full spins + target position)
+            const minSpins = 5;
+            const maxSpins = 8;
+            const totalSpins = minSpins + Math.random() * (maxSpins - minSpins);
+            const finalRotation = (totalSpins * 360) + (360 - targetAngle) + currentRotation;
+            
+            // Apply rotation
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
+            currentRotation = finalRotation % 360;
+            
+            // Create sparkle effects
+            createSparkles();
+            
+            // Add spinning class for extra effect
+            wheel.classList.add('spinning');
+            
+            setTimeout(() => {
+                wheel.classList.remove('spinning');
+                const newScore = currentScore - spinCost + prize.value;
+                localStorage.setItem('userScore', newScore.toString());
+                updateUserScore();
+                showResult(prize.value);
+                isSpinning = false;
+            }, 4000); // Match the CSS transition duration
+        }
 
-  function showLoading(show=true){
-    loadingEl.classList.toggle('show', show);
-    // disable while loading
-    payBtn.disabled = show;
-    spinBtn.disabled = show || spins <= 0;
-  }
+        function createSparkles() {
+            const container = document.querySelector('.wheel-container');
+            
+            for (let i = 0; i < 30; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                // Position sparkles around the wheel
+                const angle = (i / 30) * Math.PI * 2;
+                const radius = 120 + Math.random() * 60;
+                const x = 150 + Math.cos(angle) * radius;
+                const y = 150 + Math.sin(angle) * radius;
+                
+                sparkle.style.left = x + 'px';
+                sparkle.style.top = y + 'px';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkle.style.animationDuration = (1 + Math.random()) + 's';
+                
+                container.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.remove();
+                    }
+                }, 4000);
+            }
+        }
 
-  function showResult(message, isSuccess=false) {
-    let icon = '<i class="fas fa-spinner"></i> ';
-    if (isSuccess) icon = '<i class="fas fa-check-circle"></i> ';
-    else if (message.includes('Processing') || message.includes('Verifying')) icon = '<i class="fas fa-search-dollar"></i> ';
-    else if (message.includes('failed') || message.toLowerCase().includes('error')) icon = '<i class="fas fa-exclamation-circle"></i> ';
-    resultEl.innerHTML = icon + message;
-    resultEl.style.background = isSuccess ? 
-      'linear-gradient(45deg, rgba(76, 175, 80, 0.3), rgba(129, 199, 132, 0.3))' : 
-      'linear-gradient(45deg, rgba(244, 67, 54, 0.3), rgba(239, 154, 154, 0.3))';
-    setTimeout(()=> resultEl.style.background='rgba(255,255,255,0.15)', 4000);
-  }
+        function showResult(amount) {
+            document.getElementById('resultAmount').textContent = amount.toLocaleString();
+            document.getElementById('winAmount').textContent = amount.toLocaleString();
+            document.getElementById('resultModal').style.display = 'flex';
+            
+            // Add celebration effect
+            setTimeout(() => {
+                createCelebrationSparkles();
+            }, 200);
+        }
 
-  // drawWheel from your implementation
-  function drawWheel(){
-    wheel.innerHTML = '';
-    rewards.forEach((reward, i) => {
-      const sector = document.createElement("div");
-      sector.classList.add("sector");
-      sector.innerHTML = `<div style="transform: skewY(-38.57deg) rotate(-25deg);">${reward.toLocaleString()}</div>`;
-      wheel.appendChild(sector);
-    });
-    const centerIcon = document.createElement("i");
-    centerIcon.className = "fas fa-bullseye";
-    centerIcon.style.position = "absolute";
-    centerIcon.style.top = "50%";
-    centerIcon.style.left = "50%";
-    centerIcon.style.transform = "translate(-50%, -50%)";
-    centerIcon.style.color = "white";
-    centerIcon.style.fontSize = "24px";
-    centerIcon.style.zIndex = "6";
-    wheel.appendChild(centerIcon);
-  }
-  drawWheel();
+        function createCelebrationSparkles() {
+            const modal = document.querySelector('.result-content');
+            
+            for (let i = 0; i < 50; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.position = 'absolute';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 1 + 's';
+                sparkle.style.backgroundColor = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'][Math.floor(Math.random() * 4)];
+                
+                modal.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.remove();
+                    }
+                }, 3000);
+            }
+        }
 
-  function weightedRandom(){
-    let rnd = Math.random()*totalWeight;
-    for (let i=0;i<rewards.length;i++){
-      if (rnd < weights[i]) return i;
-      rnd -= weights[i];
-    }
-    return 0;
-  }
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
 
-  // Keep UI synced when TonConnect status changes
-  if (tonConnectUI && tonConnectUI.onStatusChange) {
-    tonConnectUI.onStatusChange(()=> {
-      console.log('TonConnect status changed', tonConnectUI.account);
-      updateSpins();
-    });
-  } else {
-    // fallback polling briefly
-    setTimeout(updateSpins, 1000);
-  }
-
-  // Helper: try to extract a txHash or txBoc from TonConnect response
-  function extractTxInfo(sendRes) {
-    console.log('sendTransaction returned:', sendRes);
-    if (!sendRes) return {};
-    if (typeof sendRes === 'string') return { txHash: sendRes };
-    // common shapes
-    if (Array.isArray(sendRes)) {
-      // array of messages/operations
-      for (const item of sendRes) {
-        if (!item) continue;
-        if (item.hash) return { txHash: item.hash };
-        if (item.txHash) return { txHash: item.txHash };
-        if (item.in_message_hash) return { txHash: item.in_message_hash };
-      }
-    }
-    if (typeof sendRes === 'object') {
-      if (sendRes.hash) return { txHash: sendRes.hash };
-      if (sendRes.txHash) return { txHash: sendRes.txHash };
-      if (sendRes.in_message_hash) return { txHash: sendRes.in_message_hash };
-      if (sendRes.boc) return { txBoc: sendRes.boc };
-      if (sendRes.messageBoc) return { txBoc: sendRes.messageBoc };
-    }
-    return {};
-  }
-
-  payBtn.addEventListener("click", async () => {
-    showLoading(true);
-    showResult("Processing payment...");
-    try {
-      // Build transaction request for TonConnect
-      const tx = {
-        validUntil: Math.floor(Date.now()/1000) + 600,
-        messages: [{ address: RECEIVER, amount: AMOUNT.toString() }]
-      };
-
-      console.log('Sending transaction via TonConnect...', tx);
-      const sendRes = await tonConnectUI.sendTransaction(tx);
-      if (!sendRes) throw new Error("Transaction was cancelled or not returned");
-
-      showResult("Verifying payment...");
-      // try to extract tx info from sendRes
-      const { txHash, txBoc } = extractTxInfo(sendRes);
-
-      // Build payload, include 'from' for extra checks
-      const payload = {};
-      if (txHash) payload.txHash = txHash;
-      if (txBoc) payload.txBoc = txBoc;
-      // include connected wallet address if available (helps txBoc flow)
-      const fromAddress = tonConnectUI?.account?.address;
-      if (fromAddress) payload.from = fromAddress;
-      payload.to = RECEIVER;
-      payload.amount = AMOUNT;
-
-      console.log('Payload to backend:', payload);
-
-      // call backend verification
-      const resp = await fetch(`${BACKEND_URL}/check-payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await resp.json();
-      console.log('Backend verification response:', data);
-
-      if (data && data.success) {
-        spins++;
-        updateSpins();
-        showResult("Payment verified! 1 spin added!", true);
-      } else {
-        showResult("Payment verification failed: " + (data?.error || 'Unknown'));
-      }
-    } catch (err) {
-      console.error('Payment error:', err);
-      showResult("Payment failed: " + (err?.message || err));
-    } finally {
-      showLoading(false);
-    }
-  });
-
-  spinBtn.addEventListener("click", () => {
-    if (spins > 0 && !isSpinning) {
-      isSpinning = true;
-      spins--;
-      updateSpins();
-      resultEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Spinning...';
-      wheel.classList.add('spinning');
-
-      const sectorCount = rewards.length;
-      const index = weightedRandom();
-      const angleStep = 360 / sectorCount;
-      const extraSpins = Math.floor(Math.random() * 3) + 5; // 5-7 rotations
-      const stopAngle = 360 * extraSpins + (360 - (index * angleStep + angleStep / 2));
-      wheel.style.transform = `rotate(${stopAngle}deg)`;
-
-      setTimeout(() => {
-        wheel.classList.remove('spinning');
-        const prize = rewards[index];
-        userScore += prize;
+        // Initialize on page load
         updateUserScore();
-        showResult(`Congratulations! You won: ${prize.toLocaleString()} XP!`, true);
-        isSpinning = false;
-        updateSpins();
-      }, 3000);
-    }
-  });
 
-  // initial UI state
-  updateSpins();
-</script>
+        // Prevent context menu on long touch
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
 
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Add keyboard support
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' && !isSpinning) {
+                event.preventDefault();
+                spinWheel();
+            }
+            if (event.code === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Add visual feedback for wheel center
+        const wheelCenter = document.querySelector('.wheel-center');
+        wheelCenter.addEventListener('mousedown', function() {
+            this.style.transform = 'translate(-50%, -50%) scale(0.95)';
+        });
+
+        wheelCenter.addEventListener('mouseup', function() {
+            this.style.transform = 'translate(-50%, -50%) scale(1.05)';
+        });
+
+        wheelCenter.addEventListener('mouseleave', function() {
+            this.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        // Touch events for wheel center
+        wheelCenter.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            this.style.transform = 'translate(-50%, -50%) scale(0.95)';
+        });
+
+        wheelCenter.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+    </script>
 </body>
 </html>
