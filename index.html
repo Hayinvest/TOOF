@@ -146,6 +146,20 @@
           <div class="price">2      <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
           <button class="buy-btn" onclick="buyPack('p4')">Buy</button>
         </div>
+        <div class="card">
+<h4>220 000 <i class="fas fa-star"></i> + 3 000 bonus</h4>
+<div class="hint">Total: 223 000</div>
+<div class="price">3 <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
+<button class="buy-btn" onclick="buyPack('p5')">Buy</button>
+</div>
+
+
+<div class="card">
+<h4>290 000 <i class="fas fa-star"></i> + 4 000 bonus</h4>
+<div class="hint">Total: 294 000</div>
+<div class="price">4 <img src="https://raw.githubusercontent.com/haykoo707/hypervverse/refs/heads/main/toncoin-ton-logo.png" alt="TON" class="ton-icon"></div>
+<button class="buy-btn" onclick="buyPack('p6')">Buy</button>
+</div>
       </div>
     </div>
   </div>
@@ -237,10 +251,7 @@ window.addEventListener("load", () => {
 <!-- Home Tab (Tasks) -->
 <div id="home" class="tab-content">
   <div class="task-section">
-    <h2 class="taskstxt">
-      <i class="fas fa-tasks"></i> 
-      Tasks
-    </h2>
+    
     <!-- Task Tabs Start -->
     <div class="task-tabs" style="display:flex;gap:8px;margin-bottom:10px;">
       <button class="task-tab active" data-type="all">All</button>
@@ -284,11 +295,14 @@ const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
 const SHOP_ADDRESS = "UQCb8i7V_2QxUurP0ZCIHCVglCmKSeKjIzgHekP3XDondvbm";
 const nt = ton => BigInt(Math.round(ton * 1e9)).toString();
 
+
 const PACKS = {
-    p1: { label: "5,000⭐", add: 5000, ton: 0.0001 },
-    p2: { label: "30,000⭐", add: 30500, ton: 0.5 },
-    p3: { label: "65,000⭐", add: 66000, ton: 1.0 },
-    p4: { label: "140,000⭐", add: 142000, ton: 2.0 }
+p1: { label: "5,000⭐", add: 5000, ton: 0.1 },
+p2: { label: "30,000⭐", add: 30500, ton: 0.5 },
+p3: { label: "65,000⭐", add: 66000, ton: 1.0 },
+p4: { label: "140,000⭐", add: 142000, ton: 2.0 },
+p5: { label: "220,000⭐", add: 223000, ton: 3.0 },
+p6: { label: "290,000⭐", add: 294000, ton: 4.0 }
 };
 
 // Wallet status-ի թարմացում

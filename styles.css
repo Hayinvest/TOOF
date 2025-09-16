@@ -207,8 +207,7 @@ transform: translateY(20px) scale(0.95);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 0 2px #00d0ff;
-
+border: 1px solid #fff;
 }
 .task-item:hover {
   background: #000000;
@@ -547,9 +546,7 @@ height: 48px;
   height: 50px;
   transition: transform 0.2s;
 }
-.tasks-icon:hover {
-  transform: scale(1.1);
-}
+
 .task-icon img {
   border-radius: 50%;
   object-fit: cover;
@@ -1634,7 +1631,7 @@ body.blurred .shop-btn
 }
 
 .task-tab {
-  padding: 6.7px 26.3px;
+  padding: 4.7px 26.3px;
   background: #181828;
   color: #fff;
   border: 1px solid #7c20ce;
@@ -1671,7 +1668,4 @@ body.blurred .shop-btn
   font-size: 18px;
   padding: 32px 0 12px 0;
   text-align: center;
-}
-.taskstxt{
-  margin-top: -10px;
 }
