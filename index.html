@@ -628,9 +628,7 @@ profileDiv.innerHTML = `
 <div class="game-option" onclick="window.location.href='spin.html'">
   <i class="fa-solid fa-arrows-spin"></i> Spin
 </div>
-    <button class="close-btn" onclick="closeGamesPopup()"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-</div>
+<div class="game-close" onclick="closeGamesPopup()"> Close</div>
 <script>
 function openGamesPopup() {
   document.getElementById("gamespopup").style.display = "flex";
@@ -770,23 +768,6 @@ document.getElementById("userScoreDisplay").innerHTML = `
 
 </script>
 
-<!-- History Popup -->
-<div id="historyPopup" class="history-popup">
-  <div class="history-popup-content">
-    <div class="history-header">
-      <h2><i class="fas fa-history"></i> Score History</h2>
-      <button id="closeHistoryBtn" class="close-history-btn"><i class="fas fa-times"></i></button>
-    </div>
-    <div id="historyList" class="history-list">
-      <!-- History items will be populated here -->
-    </div>
-  </div>
-</div>
-
-<div class="loading-screen" id="loadingScreen">
-<div class="loader"></div> 
- <h5 class="loadingh5">0.1v</h5> 
-</div>
 
 
 <!-- Դրա համար տեղադրիր սա քո body-ի վերջում -->
@@ -820,14 +801,7 @@ document.getElementById("userScoreDisplay").innerHTML = `
 </script>
 
 
-  <script>
-      setTimeout(() => {
-          document.getElementById("loadingScreen").style.opacity = "0";
-          setTimeout(() => {
-              document.getElementById("loadingScreen").style.display = "none";
-          }, 2000);
-      }, 1000);
-  </script>
+
 
   <script>
   
@@ -963,7 +937,6 @@ function closeHistoryPopup() {
 }
 
 // Set up close button handler for history popup
-document.getElementById('closeHistoryBtn').addEventListener('click', closeHistoryPopup);
 
 const defaultTasks = [
 {
