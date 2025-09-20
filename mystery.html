@@ -728,7 +728,7 @@ class MysteryBoxGame {
         const rewards = config.rewards;
         
         // 40% chance for high reward (last 2 rewards), 60% for low rewards (first 2 rewards)
-        const isHighReward = Math.random() < 0.25;
+        const isHighReward = Math.random() < 0.05;
         
         let selectedReward;
         if (isHighReward) {
