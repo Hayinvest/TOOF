@@ -2,15 +2,11 @@
 <html lang="hy">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fortune Spin Mobile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      
 
        * {
             margin: 0;
@@ -358,6 +354,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 8px 25px rgba(124, 32, 206, 0.3);
             margin-top: 20px;
+            border: 2px solid #fff;
         }
 
         .spin-button:hover {
@@ -583,8 +580,8 @@
 
     <script>
         // Initialize user score
-        if (!localStorage.getItem('userScore')) {
-            localStorage.setItem('userScore', '50000');
+        if (!localStorage.getItem('userScore')); {
+
         }
 
         // Prize configuration with exact angles and weights
